@@ -76,8 +76,8 @@ WSGI_APPLICATION = 'GestionClaves.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'proyecto',
-        'USER': 'josu',
+        'NAME': os.environ.get('nameBD'),
+        'USER': os.environ.get('userBD'),
         'PASSWORD': os.environ.get('pwdbd'),
         'HOST': 'localhost',
         'PORT': '3306',
