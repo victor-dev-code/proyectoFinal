@@ -10,6 +10,10 @@ $(document).ready(function() {
           required: true,
           minlength: 5
         },
+        token: {
+          required: true,
+          minlength: 7
+        },
       },
   
       messages : {
@@ -18,6 +22,9 @@ $(document).ready(function() {
         },
         nick: {
           minlength: "debe tener almenos 5 caracteres"
+        },
+        token: {
+          minlength: "debe tener almenos 7 caracteres"
         },
       }
     });
