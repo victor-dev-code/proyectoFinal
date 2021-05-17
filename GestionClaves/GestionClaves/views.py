@@ -1,8 +1,10 @@
 
 from django.template import Template, Context
 from django.shortcuts import render, redirect
-import os, html, re, string, requests
+import os, html, re, string, requests, base64, sys
+from GestionClaves.decoradores import login_requerido
 
+@login_requerido
 def token(request):
     template = 'token.html'
     if request.method == 'GET':
