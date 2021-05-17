@@ -2,7 +2,7 @@
 {% block title  %} Login {% endblock  %}
 
 {% block header %}
-    Introduzca los datos para acceder
+    Token de autorizacion 
     <script src="/static/js/scriptJQ2.js"></script>
 {% endblock %}
 
@@ -25,15 +25,11 @@
     <div class="aside container col-3">
         <form class='form-horizontal' id="form" action="/login" method="POST">
             {% csrf_token %}
-            <div class="form-group">
-                <label>Nick del usuario: </label><br />
-                <input type="text" id="nick" name="nick" class="form-control" placeholder="Nick" />
-            </div>
-
+<p>Se ha enviado un token a su cuenta de telegram</p>
             <div class="form-group">
                 <div class="col-3 col-s-12"></div>
-                <label>Password: </label><br />
-                <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" class="form-control" />
+                <label>Token: </label><br />
+                <input type="text" id="token" name="token" placeholder="Token" class="form-control" />
             </div>
 
 

@@ -15,8 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from GestionClaves.views import login
+from GestionClaves.views import login, token
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login', login),
+    path('token', token)
 ]
