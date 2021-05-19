@@ -4,7 +4,7 @@ $(document).ready(function() {
       rules: {
         contraseña: {
           required:true,
-          minlength: 8
+          minlength: 10
         },
         nick: {
           required: true,
@@ -18,7 +18,7 @@ $(document).ready(function() {
   
       messages : {
         contraseña: {
-          minlength: "debe tener una mayuscula, una minuscula y almenos 8 caracteres"
+          minlength: "debe tener una mayuscula, una minuscula y almenos 10 caracteres"
         },
         nick: {
           minlength: "debe tener almenos 5 caracteres"
