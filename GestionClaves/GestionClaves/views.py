@@ -7,6 +7,17 @@ from pagina1 import models
 from GestionClaves.decoradores import login_requerido
 from .bot import mandar_mensaje_bot
 
+def ip_cliente(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+def intento_ip(ip):
+    
+
 @login_requerido
 def token(request):
     template = 'token.html'
@@ -35,7 +46,7 @@ def login(request):
         
         nick = html.escape(nick)
         password = html.escape(password)
-        password = validar_password(password)
+ #       password = validar_password(password)
         try:
             models.Usuarios.objects.get(nick=nick, password=password)
             request.session['logueado'] = True
