@@ -1,9 +1,12 @@
 
 from django.template import Template, Context
 from django.shortcuts import render, redirect
-import os, html, re, string, requests, base64, sys
+from django.http import HttpResponse, JsonResponse
+import os, html, re, string, requests, base64, sys, datetime
+from pagina1 import models
 from GestionClaves.decoradores import login_requerido
 from .bot import mandar_mensaje_bot
+
 @login_requerido
 def token(request):
     template = 'token.html'
