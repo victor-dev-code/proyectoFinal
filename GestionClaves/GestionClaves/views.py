@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 import os, html, re, string, requests, base64, sys, datetime
 from pagina1 import models
+from .utils import generar_hash, convertir_cadena_para_almacenar, validar_password, convertir_almacenado_a_original, validar_usuario, validar_password_almacenado
+
 from GestionClaves.decoradores import login_requerido
 from .bot import mandar_mensaje_bot
 from datetime import timezone
@@ -70,7 +72,7 @@ def login(request):
         password = request.POST.get('contraseña', '').strip()
         nick = html.escape(nick)
         password = html.escape(password)
- #       password = validar_password(password)
+        password = validar_password(password)
         try:
             models.Usuarios.objects.get(nick=nick, password=password)
             request.session['logueado'] = True
@@ -79,6 +81,72 @@ def login(request):
         except:
             errores = ['credenciales de usuario o nick incorrectos']
             return render(request, template, {'errores': errores})
+
+#REGISTRO DE USUARIOS
+def escapar_caracteres_especiales(lista_datos):
+    resultado = []
+    for elemento in lista_datos:
+        contenido = html.escape(elemento)
+        caracteres_especiales = re.escape(string.punctuation)
+        campo = re.sub(r'['+caracteres_especiales+']', '', contenido)
+        resultado.append(campo)
+    return resultado
+
+def formato_correcto_password(password):
+    errores_password = []
+    if ' ' in password:
+        errores_password.append('La contraseña no debe contener espacios')
+    if len(password) < 8:
+        errores_password.append('La contraseña debe contener al menos 8 caracteres')
+    if not any(caracter.isupper() for caracter in password):
+        errores_password.append('La contraseña al menos debe contener una letra mayúscula')
+    if not any(caracter.islower() for caracter in password):
+        errores_password.append('La contraseña al menos debe contener una letra minúscula')
+    if not any(caracter.isdigit() for caracter in password):
+        errores_password.append('La contraseña al menos debe contener un número')
+    return errores_password
+
+def nick_repetido(usuarios):
+    nick = models.Usuarios.objects.filter(nick=usuarios.nick)
+    if len(nick) > 0:
+        return True
+    return False
+
+def correo_repetido(usuarios):
+    correo = models.Usuarios.objects.filter(correo=usuarios.correo)
+    if len(correo) > 0:
+        return True
+    return False
+
+def recolectar_errores_registro(usuarios, confirmacion, password):
+    errores = []
+    expresion_regular_email = re.compile(r'^[a-zA-Z0-9_\-\.~]{2,}@[a-zA-Z0-9_\-\.~]{2,}\.[a-zA-Z]{2,4}$')
+    if usuarios.nombre == '':
+        errores.append('El campo nombre completo está vacío')
+    if len(usuarios.nombre) < 15:
+        errores.append('El campo nombre completo debe contener al menos 20 caracteres')
+    if usuarios.nick == '':
+        errores.append('El campo nick del usuario está vacío')
+    if nick_repetido(usuarios):
+        errores.append('El nick %s ya existe' % usuarios.nick)
+    if len(usuarios.nick) < 5:
+        errores.append('El nick debe contener al menos 5 caracteres')
+    if usuarios.password == '':
+        errores.append('La contraseña está vacía')
+    if confirmacion == '':
+        errores.append('El campo de confirmación de la contraseña está vacío')
+    if not usuarios.password == confirmacion:
+        errores.append('La contraseña y su confirmación no coinciden')
+    if usuarios.correo == '':
+        errores.append('El campo correo está vacío')
+    if correo_repetido(usuarios):
+        errores.append('El correo %s ya está siendo usado por otro usuario' % usuarios.correo)
+    if not expresion_regular_email.match(usuarios.correo):
+        errores.append('El correo que ingresó no tiene el formato correcto')
+    errores_password = formato_correcto_password(password)
+    errores += errores_password
+    return errores
+
 
 def logout(request):
     request.session.flush()
