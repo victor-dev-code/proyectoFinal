@@ -11,6 +11,7 @@ from GestionClaves.decoradores import login_requerido
 from .bot import mandar_mensaje_bot
 from datetime import timezone
 
+''' ibtener ip del cliente '''
 def ip_cliente(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
@@ -18,7 +19,7 @@ def ip_cliente(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
-
+''' intento de las ip del cliente '''
 def intento_ip(ip):
     guardar_registro = models.IntentosIP.objects.filter(llave_primaria=ip)
     if not guardar_registro:
@@ -58,7 +59,7 @@ def token(request):
 
     elif request.method == 'POST':
         token = request.POST.get('token', '').strip()
-
+''' login de ususario '''
 def login(request):
     template = 'login.html'
     if request.method == 'GET':
@@ -175,6 +176,19 @@ def recolectar_errores_registro(usuarios, confirmacion, password):
     errores += errores_password
     return errores
 
+'''
+formulario de registro
+'''
+def formulario_registro(request):
+    if request.method == 'GET':
+        template = 'formulario.html'
+        return render(request, template)
+    elif request.method == 'POST':
+        ip = ip_cliente(request)
+        if intento_ip(ip):
+            return HttpResponse('exito')
+        else:
+            return HttpResponse('Agotaste tus intentos espera 1 minuto')
 
 def logout(request):
     request.session.flush()
