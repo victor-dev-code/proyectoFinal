@@ -6,6 +6,7 @@ import os, html, re, string, requests, base64, sys, datetime
 from pagina1 import models
 from .utils import generar_hash, convertir_cadena_para_almacenar, validar_password, convertir_almacenado_a_original, validar_usuario, validar_password_almacenado
 from .cifrar_aes import generar_llave_aes_from_password, cifrar, descifrar
+from .generarLlaves import generar_llave_privada, generar_llave_publica, convertir_llave_privada_bytes, convertir_llave_publica_bytes, convertir_bytes_llave_privada, convertir_bytes_llave_publica
 from GestionClaves.decoradores import login_requerido
 from .bot import mandar_mensaje_bot
 from datetime import timezone
