@@ -169,7 +169,7 @@ def recolectar_errores_registro(usuarios, confirmacion, password):
         errores.append('El token %s ya esta en uso' % usuarios.tokenT)
     if len(usuarios.tokenT) < 46:
         errores.append('el token no puede ser menos de 46 caracteres ni mas de 46')
-    if not expresion_regular_token_telegram(usuarios.tokenT):
+    if not expresion_regular_token_telegram.match(usuarios.tokenT):
         errores.append('el token que ingreso no tiene el formato correcto')
     errores_password = formato_correcto_password(password)
     errores += errores_password
