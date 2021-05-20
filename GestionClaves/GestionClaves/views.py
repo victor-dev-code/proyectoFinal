@@ -121,22 +121,22 @@ def correo_repetido(usuarios):
         return True
     return False
 
-def chatID_repetido(usuarios):
-    chatID = models.Usuarios.objects.filter(chatID=usuarios.chatID)
-    if len(chatID) > 0:
+def chat_id_repetido(usuarios):
+    chat_id = models.Usuarios.objects.filter(chat_id=usuarios.chatID)
+    if len(chat_id) > 0:
         return True
     return False
 
-def tokenT_repetido(usuarios):
-    tokenT = models.Usuarios.objects.filter(tokenT=usuarios.tokenT) 
-    if len(tokenT) > 0:
+def token_repetido(usuarios):
+    token = models.Usuarios.objects.filter(token=usuarios.tokenT) 
+    if len(token) > 0:
         return True
     return False 
 
 def recolectar_errores_registro(usuarios, confirmacion, password):
     errores = []
     expresion_regular_email = re.compile(r'^[a-zA-Z0-9_\-\.~]{2,}@[a-zA-Z0-9_\-\.~]{2,}\.[a-zA-Z]{2,4}$')
-    expresion_regular_token_telegram(r'^[0-9]{10}:[a-zA-Z0-9_-]{35}$')
+    expresion_regular_token_telegram = re.compile(r'^[0-9]{10}:[a-zA-Z0-9_-]{35}$')
     if usuarios.nombre == '':
         errores.append('El campo nombre completo está vacío')
     if len(usuarios.nombre) < 15:
@@ -157,10 +157,20 @@ def recolectar_errores_registro(usuarios, confirmacion, password):
         errores.append('El campo correo está vacío')
     if correo_repetido(usuarios):
         errores.append('El correo %s ya está siendo usado por otro usuario' % usuarios.correo)
-    if not expresion_regular_token_telegram(usuarios.tokenT):
-        errores.append('el token que ingreso no tiene el formato correcto')
     if not expresion_regular_email.match(usuarios.correo):
         errores.append('El correo que ingresó no tiene el formato correcto')
+    if usuarios.chatID== '':
+        errores.append('el campo del chat id esta vacio')
+    if chat_id_repetido(usuarios):
+        errores.append('el chat id %s ya esta en uso' % usuarios.chatID)
+    if usuarios.tokenT== '':
+        errores.append('el campo del token esta vacio')
+    if token_repetido(usuarios):
+        errores.append('El token %s ya esta en uso' % usuarios.tokenT)
+    if len(usuarios.tokenT) < 46:
+        errores.append('el token no puede ser menos de 46 caracteres ni mas de 46')
+    if not expresion_regular_token_telegram(usuarios.tokenT):
+        errores.append('el token que ingreso no tiene el formato correcto')
     errores_password = formato_correcto_password(password)
     errores += errores_password
     return errores
