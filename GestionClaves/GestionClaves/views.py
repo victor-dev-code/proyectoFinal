@@ -21,7 +21,7 @@ def ip_cliente(request):
     return ip
 ''' intento de las ip del cliente '''
 def intento_ip(ip):
-    guardar_registro = models.IntentosIP.objects.filter(llave_primaria=ip)
+    guardar_registro = models.IntentosIP.objects.filter(pk=ip)
     if not guardar_registro:
         registro = models.IntentosIP(ip=ip, cont=1, last_Peticion=datetime.datetime.now())
         registro.save()
@@ -141,7 +141,7 @@ def recolectar_errores_registro(usuarios, confirmacion, password):
     if usuarios.nombre == '':
         errores.append('El campo nombre completo está vacío')
     if len(usuarios.nombre) < 15:
-        errores.append('El campo nombre completo debe contener al menos 20 caracteres')
+        errores.append('El campo nombre completo debe contener al menos 15 caracteres')
     if usuarios.nick == '':
         errores.append('El campo nick del usuario está vacío')
     if nick_repetido(usuarios):
@@ -171,7 +171,8 @@ def recolectar_errores_registro(usuarios, confirmacion, password):
     if len(usuarios.tokenT) < 46:
         errores.append('el token no puede ser menos de 46 caracteres ni mas de 46')
     if not expresion_regular_token_telegram.match(usuarios.tokenT):
-        errores.append('el token que ingreso no tiene el formato correcto')
+        errores.append('el token que ingreso no tiene el formato correcto') 
+ 
     errores_password = formato_correcto_password(password)
     errores += errores_password
     return errores

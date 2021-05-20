@@ -14,6 +14,22 @@ $(document).ready(function() {
           required: true,
           minlength: 7
         },
+        nomCompleto : {
+          required: true,
+          minlength: 15
+        },
+        chat: {
+          required: true,
+          minlength: 9
+        },
+        tokt: {
+          required: true,
+          minlength: 46
+        },
+        email: {
+          required: true,
+          email: true
+        }, 
       },
   
       messages : {
@@ -25,6 +41,18 @@ $(document).ready(function() {
         },
         token: {
           minlength: "debe tener almenos 7 caracteres"
+        },
+        nomCompleto : {
+          minlength: "el nombre debe tener almenos 15 caracteres"
+        },
+        email: {
+          email: "el correo debe estar en formato ejemplo@dominio.com"
+        },
+        chat: {
+          minlength: "el chat id debe de tener 9 caracteres "
+        },
+        tokt: {
+          minlength: "el chat id debe de tener 46 caracteres "
         },
       }
     });
