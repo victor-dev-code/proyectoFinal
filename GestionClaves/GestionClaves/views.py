@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse
 import os, html, re, string, requests, base64, sys, datetime
 from pagina1 import models
 from .utils import generar_hash, convertir_cadena_para_almacenar, validar_password, convertir_almacenado_a_original, validar_usuario, validar_password_almacenado
-
+from .cifrar_aes import generar_llave_aes_from_password, cifrar, descifrar
 from GestionClaves.decoradores import login_requerido
 from .bot import mandar_mensaje_bot
 from datetime import timezone
@@ -82,7 +82,9 @@ def login(request):
             errores = ['credenciales de usuario o nick incorrectos']
             return render(request, template, {'errores': errores})
 
-#REGISTRO DE USUARIOS
+'''
+registrar usuarios
+'''
 def escapar_caracteres_especiales(lista_datos):
     resultado = []
     for elemento in lista_datos:
@@ -97,7 +99,7 @@ def formato_correcto_password(password):
     if ' ' in password:
         errores_password.append('La contraseña no debe contener espacios')
     if len(password) < 8:
-        errores_password.append('La contraseña debe contener al menos 8 caracteres')
+        errores_password.append('La contraseña debe contener al menos 10 caracteres')
     if not any(caracter.isupper() for caracter in password):
         errores_password.append('La contraseña al menos debe contener una letra mayúscula')
     if not any(caracter.islower() for caracter in password):
@@ -118,9 +120,22 @@ def correo_repetido(usuarios):
         return True
     return False
 
+def chatID_repetido(usuarios):
+    chatID = models.Usuarios.objects.filter(chatID=usuarios.chatID)
+    if len(chatID) > 0:
+        return True
+    return False
+
+def tokenT_repetido(usuarios):
+    tokenT = models.Usuarios.objects.filter(tokenT=usuarios.tokenT) 
+    if len(tokenT) > 0:
+        return True
+    return False 
+
 def recolectar_errores_registro(usuarios, confirmacion, password):
     errores = []
     expresion_regular_email = re.compile(r'^[a-zA-Z0-9_\-\.~]{2,}@[a-zA-Z0-9_\-\.~]{2,}\.[a-zA-Z]{2,4}$')
+    expresion_regular_token_telegram(r'^[0-9]{10}:[a-zA-Z0-9_-]{35}$')
     if usuarios.nombre == '':
         errores.append('El campo nombre completo está vacío')
     if len(usuarios.nombre) < 15:
@@ -141,6 +156,8 @@ def recolectar_errores_registro(usuarios, confirmacion, password):
         errores.append('El campo correo está vacío')
     if correo_repetido(usuarios):
         errores.append('El correo %s ya está siendo usado por otro usuario' % usuarios.correo)
+    if not expresion_regular_token_telegram(usuarios.tokenT):
+        errores.append('el token que ingreso no tiene el formato correcto')
     if not expresion_regular_email.match(usuarios.correo):
         errores.append('El correo que ingresó no tiene el formato correcto')
     errores_password = formato_correcto_password(password)

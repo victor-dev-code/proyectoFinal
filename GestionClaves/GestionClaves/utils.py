@@ -26,7 +26,7 @@ def validar_password(password):
     passwords = list(models.Usuarios.objects.values_list('password').distinct())
     for salt in salts_almacenados:
     	hasher = hashlib.sha512()
-    	salt = ','.join(salt) #utiliza la coma como delimitador
+    	salt = ','.join(salt) 
     	salt = convertir_almacenado_a_original(salt)
     	hasher.update(password_binario + salt)
     	nuevo_hash = hasher.hexdigest()

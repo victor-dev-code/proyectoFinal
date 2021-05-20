@@ -18,7 +18,7 @@ $(document).ready(function() {
   
       messages : {
         contraseña: {
-          minlength: "debe tener una mayuscula, una minuscula y almenos 10 caracteres"
+          minlength: "debe tener una mayuscula, una minuscula y almenos 10 caracteres y un numero"
         },
         nick: {
           minlength: "debe tener almenos 5 caracteres"
