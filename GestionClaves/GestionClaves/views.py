@@ -123,14 +123,14 @@ def correo_repetido(usuarios):
     return False
 
 def chat_id_repetido(usuarios):
-    chat_id = models.Usuarios.objects.filter(chat_id=usuarios.chatID)
-    if len(chat_id) > 0:
+    chatID = models.Usuarios.objects.filter(chatID=usuarios.chatID)
+    if len(chatID) > 0:
         return True
     return False
 
 def token_repetido(usuarios):
-    token = models.Usuarios.objects.filter(token=usuarios.tokenT) 
-    if len(token) > 0:
+    tokenT = models.Usuarios.objects.filter(tokenT=usuarios.tokenT) 
+    if len(tokenT) > 0:
         return True
     return False 
 
@@ -181,16 +181,83 @@ def recolectar_errores_registro(usuarios, confirmacion, password):
 formulario de registro
 '''
 def formulario_registro(request):
+    template = 'formulario.html'
     if request.method == 'GET':
-        template = 'formulario.html'
         return render(request, template)
     elif request.method == 'POST':
         ip = ip_cliente(request)
         if intento_ip(ip):
+            '''Recuperacion de datos ingresados desde la pagina'''
+            nombre = request.POST.get('nomCompleto', '').strip()
+            nick = request.POST.get('nick', '').strip()
+            password = request.POST.get('contraseña', '').strip()
+            confirmacion = request.POST.get('confirmacion', '').strip()
+            correo = request.POST.get('email', '').strip()
+            chat_id = request.POST.get('chat', '').strip()
+            token_telegram = request.POST.get('tokt', '').strip()
+
+            '''Elimina caracteres especiales y verifica el password, correo, token de telegram y chat_id'''
+            lista_datos = [nombre, nick, password, confirmacion]
+            lista = escapar_caracteres_especiales(lista_datos)
+
+            password = html.escape(password)
+            confirmacion = html.escape(confirmacion)
+            correo = html.escape(correo)
+            chat_id = html.escape(chat_id)
+            token_telegram = html.escape(token_telegram)
+
+            '''Creación y proceso de hasheo de contraseña a partir de un archivo externo (utils)'''
+            salt = os.urandom(16)
+            password_hasheado = generar_hash(password, salt)
+            password_confirmacion_hasheado = generar_hash(confirmacion, salt)
+            salt_almacenado = convertir_cadena_para_almacenar(salt)
+
+            '''creación de llaves y transforlas a formato PEM (otras cosas)'''
+            llave_privada = generar_llave_privada()
+            llave_publica = generar_llave_publica(llave_privada)
+            llave_privada_pem = convertir_llave_privada_bytes(llave_privada)
+            llave_publica_pem = convertir_llave_publica_bytes(llave_publica)
+            llave_publica = convertir_cadena_para_almacenar(llave_publica_pem)
+
+            '''Proceso de cifrado de la llave privada'''
+            iv = os.urandom(16)
+            llave_aes = generar_llave_aes_from_password(password)
+            llave_privada_cifrada = cifrar(llave_privada_pem, llave_aes, iv)
+            llave_privada = convertir_cadena_para_almacenar(llave_privada_cifrada)
+            iv_almacenado = convertir_cadena_para_almacenar(iv)
+
+            '''Guardar los datos recuperados/creados anteriormente antes de mandarlos a la base de datos'''
+            usuarios = models.Usuarios()
+            usuarios.nombre = lista[0]
+            usuarios.nick = lista[1]
+            usuarios.password = password_hasheado
+            usuarios.correo = correo
+            usuarios.chatID = chat_id
+            usuarios.tokenT = token_telegram
+            usuarios.llave_privada = llave_privada
+            usuarios.llave_publica = llave_publica
+            usuarios.iv = iv_almacenado
+            usuarios.salt = salt_almacenado
+
+            '''Manejo de errores y enviar los datos a la base de datos (en caso de que no existan errores)'''
+            errores = recolectar_errores_registro(usuarios, password_confirmacion_hasheado, password)
+            if not errores:
+                usuarios.save()
+                return redirect('/formulario_registro')
+            else:
+                contexto = {'errores': errores, 'usuarios': usuarios}
+                return render(request, template, contexto)
+        else:
+            return HttpResponse('Agotaste tus intentos espera 1 minuto')
+    '''
+    elif request.method == 'POST':
+        ip = ip_cliente(request)
+        
+        if intento_ip(ip):
             return HttpResponse('exito')
         else:
             return HttpResponse('Agotaste tus intentos espera 1 minuto')
-
+'''
 def logout(request):
     request.session.flush()
     return redirect('/login')
