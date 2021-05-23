@@ -11,6 +11,7 @@ from GestionClaves.decoradores import login_requerido
 from .bot import mandar_mensaje_bot
 from datetime import timezone
 
+
 ''' ibtener ip del cliente '''
 def ip_cliente(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -48,12 +49,17 @@ def tiempo_ahora(tiempo):
     diferencia = ahora - tiempo
     return diferencia.seconds
 
-
+'''
 def token(request):
     template = 'token.html'
     if request.method == 'GET':
         return render(request, template)
-
+'''
+''' token de prueba'''
+def token(request):
+    template = 'token.html'
+    if request.method == 'GET':
+        return render(request, template)
 ''' login de usuario prueba'''
 def login(request):
     template = 'login.html'
