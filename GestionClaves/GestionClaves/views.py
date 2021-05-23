@@ -7,7 +7,7 @@ from pagina1 import models
 from .utils import generar_hash, convertir_cadena_para_almacenar, validar_password, convertir_almacenado_a_original, validar_usuario, validar_password_almacenado
 from .cifrar_aes import generar_llave_aes_from_password, cifrar, descifrar
 from .generarLlaves import generar_llave_privada, generar_llave_publica, convertir_llave_privada_bytes, convertir_llave_publica_bytes, convertir_bytes_llave_privada, convertir_bytes_llave_publica
-from GestionClaves.decoradores import login_requerido, login_requerido2
+from GestionClaves.decoradores import login_requerido
 from .bot import mandar_mensaje_bot
 from datetime import timezone
 
@@ -59,24 +59,15 @@ def token(request):
 
 def token(request):
     template = 'token.html'
-    if request.method == 'GET':
-        logueado = request.session.get('logueado', False)
-        if logueado:
-            return redirect('/pagina')
-        return render(request, template)
-    elif request.method == 'POST':
-        token = request.POST.get('token', '').strip()
-        try:
-            request.session['logueado'] = True
-            request.session['usuario'] = nick
-            return redirect('/pagina')
-        except:
-            return render(request, template)
+    return render(request, template)
     
 '''login de prueba '''
 def login(request):
     template = 'login.html'
     if request.method == 'GET':
+        logueado = request.session.get('logueado', False)
+        if logueado:
+            return redirect('/pagina')
         return render(request, template)
     elif request.method == 'POST':
         nick = request.POST.get('nick', '').strip()
@@ -86,11 +77,11 @@ def login(request):
         password = validar_password(password)
         try:
             models.Usuarios.objects.get(nick=nick, password=password)
-            #request.session['logueado'] = True
-            #request.session['usuario'] = nick
+            request.session['logueado'] = True
+            request.session['usuario'] = nick
             '''envia mensaje a telegram despues de pasar el login'''
-            men = mandar_mensaje_bot(request) 
-            return redirect('/token')
+            #men = mandar_mensaje_bot(request) 
+            return redirect('/pagina')
         except:
             errores = ['credenciales de usuario o nick incorrectos']
             return render(request, template, {'errores': errores})
@@ -285,11 +276,11 @@ def formulario_registro(request):
         else:
             return HttpResponse('Agotaste tus intentos espera 1 minuto')
 
-
+@login_requerido
 def logout(request):
     request.session.flush()
     return redirect('/login')
-
+@login_requerido
 def pagina(request):
     template = 'inicial.html'
     if request.method == 'GET':

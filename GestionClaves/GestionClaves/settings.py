@@ -123,7 +123,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
+#SESSION_COOKIE_AGE = 3600
+SESSION_COOKIE_AGE = 10
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
