@@ -48,26 +48,16 @@ def tiempo_ahora(tiempo):
     diferencia = ahora - tiempo
     return diferencia.seconds
 
-@login_requerido
+
 def token(request):
     template = 'token.html'
     if request.method == 'GET':
-        logueado = request.session.get('logueado', False)
-        if logueado:
-            return redirect('/pagina')
         return render(request, template)
 
-    elif request.method == 'POST':
-        token = request.POST.get('token', '').strip()
-''' login de ususario '''
+''' login de usuario prueba'''
 def login(request):
     template = 'login.html'
     if request.method == 'GET':
-        logueado = request.session.get('logueado', False)
-        if logueado:
-            mensaje = base64.b64encode(os.urandom(5)).decode('utf-8')
-            mensaje = mandar_mensaje_bot(mensaje)
-            return redirect('/token')
         return render(request, template)
     elif request.method == 'POST':
         nick = request.POST.get('nick', '').strip()
@@ -84,6 +74,30 @@ def login(request):
             errores = ['credenciales de usuario o nick incorrectos']
             return render(request, template, {'errores': errores})
 
+''' login de ususario original'''
+'''
+def login(request):
+    template = 'login.html'
+    if request.method == 'GET':
+        logueado = request.session.get('logueado', False)
+        if logueado:
+            return redirect('/login')
+        return render(request, template)
+    elif request.method == 'POST':
+        nick = request.POST.get('nick', '').strip()
+        password = request.POST.get('contraseña', '').strip()
+        nick = html.escape(nick)
+        password = html.escape(password)
+        password = validar_password(password)
+        try:
+            models.Usuarios.objects.get(nick=nick, password=password)
+            request.session['logueado'] = True
+            request.session['usuario'] = nick
+            return redirect('/login')
+        except:
+            errores = ['credenciales de usuario o nick incorrectos']
+            return render(request, template, {'errores': errores})
+'''
 '''
 registrar usuarios
 '''
@@ -100,7 +114,7 @@ def formato_correcto_password(password):
     errores_password = []
     if ' ' in password:
         errores_password.append('La contraseña no debe contener espacios')
-    if len(password) < 8:
+    if len(password) < 10:
         errores_password.append('La contraseña debe contener al menos 10 caracteres')
     if not any(caracter.isupper() for caracter in password):
         errores_password.append('La contraseña al menos debe contener una letra mayúscula')
@@ -133,7 +147,7 @@ def token_repetido(usuarios):
     if len(tokenT) > 0:
         return True
     return False 
-
+'''recoleccion de errores'''
 def recolectar_errores_registro(usuarios, confirmacion, password):
     errores = []
     expresion_regular_email = re.compile(r'^[a-zA-Z0-9_\-\.~]{2,}@[a-zA-Z0-9_\-\.~]{2,}\.[a-zA-Z]{2,4}$')
@@ -249,15 +263,6 @@ def formulario_registro(request):
                 return render(request, template, contexto)
         else:
             return HttpResponse('Agotaste tus intentos espera 1 minuto')
-    '''
-    elif request.method == 'POST':
-        ip = ip_cliente(request)
-        
-        if intento_ip(ip):
-            return HttpResponse('exito')
-        else:
-            return HttpResponse('Agotaste tus intentos espera 1 minuto')
-'''
 def logout(request):
     request.session.flush()
     return redirect('/login')
