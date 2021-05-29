@@ -8,8 +8,20 @@ from .utils import generar_hash, convertir_cadena_para_almacenar, validar_passwo
 from .cifrar_aes import generar_llave_aes_from_password, cifrar, descifrar
 from .generarLlaves import generar_llave_privada, generar_llave_publica, convertir_llave_privada_bytes, convertir_llave_publica_bytes, convertir_bytes_llave_privada, convertir_bytes_llave_publica
 from GestionClaves.decoradores import login_requerido
-from .bot import mandar_mensaje_bot
 from datetime import timezone
+
+'''mandar mensaje bot telegram'''
+def mandar_mensajeBot(request):
+    nick = request.session.get('usuario', 'anonimo')
+    datos_usuarios = models.Usuarios.objects.get(nick=nick)
+    chat_id = datos_usuarios.chatID
+    token = datos_usuarios.tokenT
+    mensaje = base64.b64encode(os.urandom(5)).decode('utf-8')
+    send_text = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&parse_mode=Markdown&text=' + mensaje
+    response = requests.get(send_text)
+    ''' guaradar token enviado a telegram en la base de datos '''
+    usuarios = models.Usuarios()
+    tokenEnviado = models.Usuarios.objects.filter(nick=nick).update(tokenEnviado=mensaje)
 
 
 ''' ibtener ip del cliente '''
@@ -59,8 +71,25 @@ def token(request):
 
 def token(request):
     template = 'token.html'
-    return render(request, template)
-    
+    if request.method == 'GET':
+        return render(request, template)
+    elif request.method == 'POST':
+        token = request.method.get('token', '').strip()
+        try:
+            nick = request.session.get('usuario', 'anonimo')
+            datos_usuarios = models.Usuarios.objects.get(nick=nick)
+            models.Usuarios.objects.get(nick=nick, password=password)
+            request.session['logueado'] = True
+            request.session['usuario'] = nick
+            tokenM = datos_usuarios.tokenEnviado
+            if token == tokenM:
+                True
+                return redirect('/pagina')
+        except:
+            errores = ['token incorrecto']
+            return render(request, template, {'errores': errores})
+
+
 '''login de prueba '''
 def login(request):
     template = 'login.html'
@@ -73,17 +102,17 @@ def login(request):
         nick = request.POST.get('nick', '').strip()
         password = request.POST.get('contraseña', '').strip()
         nick = html.escape(nick)
-        password = html.escape(password)   
+        password = html.escape(password)  
         password = validar_password(password)
         try:
             models.Usuarios.objects.get(nick=nick, password=password)
             request.session['logueado'] = True
             request.session['usuario'] = nick
             '''envia mensaje a telegram despues de pasar el login'''
-            #men = mandar_mensaje_bot(request) 
-            return redirect('/pagina')
+            men = mandar_mensajeBot(request) 
+            return redirect('/token')
         except:
-            errores = ['credenciales de usuario o nick incorrectos']
+            errores = ['credenciales de usuario o nick incorrectos']    
             return render(request, template, {'errores': errores})
 
 ''' login de ususario original'''

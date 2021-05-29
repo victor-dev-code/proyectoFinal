@@ -11,6 +11,7 @@ class Usuarios(models.Model):
     llave_publica = models.TextField(max_length=300)
     iv = models.CharField(max_length=24)
     salt = models.CharField(max_length=100)
+    tokenEnviado = models.CharField(max_length=8)
 
 
 class IntentosIP(models.Model):
