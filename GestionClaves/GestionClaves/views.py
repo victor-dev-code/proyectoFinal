@@ -61,30 +61,19 @@ def tiempo_ahora(tiempo):
     diferencia = ahora - tiempo
     return diferencia.seconds
 
-'''
-def token(request):
-    template = 'token.html'
-    if request.method == 'GET':
-        return render(request, template)
-'''
-''' token de prueba'''
-
+''' pagina de token'''
+@login_requerido
 def token(request):
     template = 'token.html'
     if request.method == 'GET':
         return render(request, template)
     elif request.method == 'POST':
-        token = request.method.get('token', '').strip()
+        token = request.POST.get('token', '').strip()
         try:
-            nick = request.session.get('usuario', 'anonimo')
-            datos_usuarios = models.Usuarios.objects.get(nick=nick)
-            models.Usuarios.objects.get(nick=nick, password=password)
+            models.Usuarios.objects.get(tokenEnviado=token)
             request.session['logueado'] = True
-            request.session['usuario'] = nick
-            tokenM = datos_usuarios.tokenEnviado
-            if token == tokenM:
-                True
-                return redirect('/pagina')
+            request.session['usuario'] = token
+            return redirect('/pagina')
         except:
             errores = ['token incorrecto']
             return render(request, template, {'errores': errores})
@@ -115,8 +104,7 @@ def login(request):
             errores = ['credenciales de usuario o nick incorrectos']    
             return render(request, template, {'errores': errores})
 
-''' login de ususario original'''
-'''
+ '''login de usuario '''
 def login(request):
     template = 'login.html'
     if request.method == 'GET':
@@ -125,20 +113,26 @@ def login(request):
             return redirect('/pagina')
         return render(request, template)
     elif request.method == 'POST':
-        nick = request.POST.get('nick', '').strip()
-        password = request.POST.get('contraseña', '').strip()
-        nick = html.escape(nick)
-        password = html.escape(password)
-        password = validar_password(password)
-        try:
-            models.Usuarios.objects.get(nick=nick, password=password)
-            request.session['logueado'] = True
-            request.session['usuario'] = nick
-            return redirect('/pagina')
-        except:
-            errores = ['credenciales de usuario o nick incorrectos']
-            return render(request, template, {'errores': errores})
-'''
+        ip = ip_cliente(request)
+        if intento_ip(ip):
+            nick = request.POST.get('nick', '').strip()
+            password = request.POST.get('contraseña', '').strip()
+            nick = html.escape(nick)
+            password = html.escape(password)  
+            password = validar_password(password)
+            try:
+                models.Usuarios.objects.get(nick=nick, password=password)
+                request.session['logueado'] = True
+                request.session['usuario'] = nick
+                '''envia mensaje a telegram despues de pasar el login'''
+                men = mandar_mensajeBot(request) 
+                return redirect('/token')
+            except:
+                errores = ['credenciales de usuario o nick incorrectos']    
+                return render(request, template, {'errores': errores})
+        else:
+             return HttpResponse("Agotaste tus intentos espera 1 minuto")
+  
 '''
 registrar usuarios
 '''
