@@ -7,7 +7,7 @@ from pagina1 import models
 from .utils import generar_hash, convertir_cadena_para_almacenar, validar_password, convertir_almacenado_a_original, validar_usuario, validar_password_almacenado
 from .cifrar_aes import generar_llave_aes_from_password, cifrar, descifrar
 from .generarLlaves import generar_llave_privada, generar_llave_publica, convertir_llave_privada_bytes, convertir_llave_publica_bytes, convertir_bytes_llave_privada, convertir_bytes_llave_publica
-from GestionClaves.decoradores import login_requerido
+from GestionClaves.decoradores import login_requerido, login_requerido2
 from datetime import timezone
 
 '''mandar mensaje bot telegram'''
@@ -62,20 +62,25 @@ def tiempo_ahora(tiempo):
     return diferencia.seconds
 
 ''' pagina de token'''
+@login_requerido
 def token(request):
     template = 'token.html'
     if request.method == 'GET':
         return render(request, template)
     elif request.method == 'POST':
-        token = request.POST.get('token', '').strip()
-        try:
-            models.Usuarios.objects.get(tokenEnviado=token)
-            request.session['logueado'] = True
-            request.session['usuario'] = token
-            return redirect('/pagina')
-        except:
-            errores = ['token incorrecto']
-            return render(request, template, {'errores': errores})
+        ip = ip_cliente(request)
+        if intento_ip(ip):
+            token = request.POST.get('token', '').strip()
+            try:
+                models.Usuarios.objects.get(tokenEnviado=token)
+                request.session['logueado2'] = True
+                request.session['usuario'] = token
+                return redirect('/pagina')
+            except:
+                errores = ['token incorrecto']
+                return render(request, template, {'errores': errores})
+        else:
+            return HttpResponse("Agotaste tus intentos espera 1 minuto") 
 
 
 '''login de usuario '''
@@ -273,11 +278,12 @@ def formulario_registro(request):
         else:
             return HttpResponse('Agotaste tus intentos espera 1 minuto')
 
-@login_requerido
+@login_requerido2
 def logout(request):
     request.session.flush()
     return redirect('/login')
-@login_requerido
+    
+@login_requerido2
 def pagina(request):
     template = 'inicial.html'
     if request.method == 'GET':

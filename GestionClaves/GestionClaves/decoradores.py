@@ -6,3 +6,11 @@ def login_requerido(vista):
 			return redirect('/login')
 		return vista(request, *args, **kwargs)
 	return interna
+
+def login_requerido2(vista):
+	def interna(request, *args, **kwargs):
+		logueado = request.session.get('logueado2', False)
+		if not logueado:
+			return redirect('/login')
+		return vista(request, *args, **kwargs)
+	return interna
