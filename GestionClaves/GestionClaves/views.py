@@ -18,10 +18,10 @@ def mandar_mensajeBot(request):
     token = datos_usuarios.tokenT
     mensaje = base64.b64encode(os.urandom(5)).decode('utf-8')
     send_text = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&parse_mode=Markdown&text=' + mensaje
-    response = requests.get(send_text)
+    requests.get(send_text)
     ''' guaradar token enviado a telegram en la base de datos '''
-    usuarios = models.Usuarios()
-    tokenEnviado = models.Usuarios.objects.filter(nick=nick).update(tokenEnviado=mensaje)
+    models.Usuarios()
+    models.Usuarios.objects.filter(nick=nick).update(tokenEnviado=mensaje)
 
 
 ''' ibtener ip del cliente '''
@@ -104,7 +104,7 @@ def login(request):
                 request.session['logueado'] = True
                 request.session['usuario'] = nick
                 '''envia mensaje a telegram despues de pasar el login'''
-                men = mandar_mensajeBot(request) 
+                mandar_mensajeBot(request)
                 return redirect('/token')
             except:
                 errores = ['credenciales de usuario o nick incorrectos']    
