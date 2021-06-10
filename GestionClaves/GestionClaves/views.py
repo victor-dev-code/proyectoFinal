@@ -78,7 +78,7 @@ def token(request):
                 return redirect('/pagina')
             except:
                 errores = ['token incorrecto']
-                return render(request, template, {'errores': errores})
+                return render(request, "login.html", {'errores': errores})
         else:
             return HttpResponse("Agotaste tus intentos espera 1 minuto") 
 
