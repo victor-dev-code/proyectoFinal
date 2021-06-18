@@ -282,6 +282,11 @@ def formulario_registro(request):
 def logout(request):
     request.session.flush()
     return redirect('/login')
+
+@login_requerido
+def logout(request):
+    request.session.flush()
+    return redirect('/login')
     
 @login_requerido2
 def pagina(request):

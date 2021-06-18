@@ -18,8 +18,8 @@ for linea in $(ccdecrypt -c $FILE); do
 	export $linea 
 done 
 
-#python3 manage.py runserver 0.0.0.0:8080
-python3 manage.py runsslserver 0.0.0.0:8080
+python3 manage.py runserver 0.0.0.0:8080
+#python3 manage.py runsslserver 0.0.0.0:8080
 ;;
 2)
 echo "escribe el nombre del archvo env"
