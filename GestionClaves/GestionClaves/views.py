@@ -22,6 +22,7 @@ def mandar_mensajeBot(request):
     ''' guaradar token enviado a telegram en la base de datos '''
     models.Usuarios()
     models.Usuarios.objects.filter(nick=nick).update(tokenEnviado=mensaje)
+    
 
 
 ''' ibtener ip del cliente '''
