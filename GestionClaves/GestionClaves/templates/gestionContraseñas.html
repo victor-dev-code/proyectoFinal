@@ -1,0 +1,37 @@
+{% extends 'base2.html' %}
+{% block title  %} gestionar firmas {% endblock  %}
+
+{% block header %}
+    prueb
+    <script src="/static/js/scriptJQ2.js"></script>
+{% endblock %}
+
+{% block content %}
+    {%  if mensaje %}
+        <div class='container' id="mensaje">
+            <div class="card bg-info text-white">El resultado es: </div>
+            <div class="alert alert-info">{{ mensaje }}</div>
+        </div>
+    {%  endif %}
+    {%  if errores %}
+        <div class='container' id="errores">
+            <div class="card bg-danger text-white">ERROR</div>
+            <div class="alert alert-danger">
+                {{ errores }}
+            </div>
+        </div>
+    {%  endif %}
+
+    <div class="container col-3 p-3 my-3 bg-primary text-white text-center">
+        <form id="form" action="/gestion_llaves" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Contraseña: </label><br />
+                <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" class="form-control" />
+            </div>
+
+            <input type="submit" value="crear llaves" />
+        </form>
+    </div>
+
+{% endblock %}

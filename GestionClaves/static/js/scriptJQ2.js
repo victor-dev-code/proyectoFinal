@@ -29,7 +29,15 @@ $(document).ready(function() {
         email: {
           required: true,
           email: true
-        }, 
+        },
+        nomCuenta: {
+          required: true,
+          minlength: 20
+        },
+        usuario: {
+          required: true,
+          minlength: 5
+        },
       },
   
       messages : {
@@ -53,6 +61,9 @@ $(document).ready(function() {
         },
         tokt: {
           minlength: "el chat id debe de tener 46 caracteres "
+        },
+        nomCuenta: {
+          minlength: "el chat id debe de tener 20 caracteres "
         },
       }
     });

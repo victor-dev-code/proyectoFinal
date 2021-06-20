@@ -282,7 +282,6 @@ def formulario_registro(request):
 
 @login_requerido2
 def usuarioR(request):
-
     request.session.flush()
     return redirect('/pagina')
 
