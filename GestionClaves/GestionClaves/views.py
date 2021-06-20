@@ -281,11 +281,6 @@ def formulario_registro(request):
             return HttpResponse('Agotaste tus intentos espera 1 minuto')
 
 @login_requerido2
-def usuarioR(request):
-    request.session.flush()
-    return redirect('/pagina')
-
-@login_requerido2
 def logout(request):
     request.session.flush()
     return redirect('/login')
