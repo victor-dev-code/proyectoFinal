@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es-mx">
+  <head>
+    <title> {% block title %}  {% endblock %}</title>
+  </head>
+    <style>
+
+
+
+ #navB nav {
+  float: center;
+  display: inline;
+        margin: 0 200px ;
+}
+ #navB nav ul {
+  list-style: none;
+  overflow: hidden;
+}
+ nav ul li {
+  float: left;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+}
+  nav ul li a {
+  display: block;
+  padding: 20px;
+  color: #fff;
+  text-decoration: none;
+}
+   nav ul li:hover {
+  background: #000000;
+}
+.wrapper {
+  width: 80%;
+  margin: auto;
+  overflow:hidden;
+}
+
+#headerB {
+  background: rgba(0,0,0,0.9);
+  width: 100%;
+  position: fixed;
+  z-index: 20;
+}
+    </style>
+    <body>
+        <header id="headerB">
+        <section class="wrapper">
+        <nav id="navB">
+        <ul id="barra">
+            <li> <a href="/logout">logout</a></li>
+            <li> <a href="/formulario_credenciales">formulario credenciales</a></li>
+        </ul>
+        </nav>
+        </header>
+        </section>
+    </body>
+</html>

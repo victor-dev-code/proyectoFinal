@@ -281,6 +281,12 @@ def formulario_registro(request):
             return HttpResponse('Agotaste tus intentos espera 1 minuto')
 
 @login_requerido2
+def usuarioR(request):
+
+    request.session.flush()
+    return redirect('/pagina')
+
+@login_requerido2
 def logout(request):
     request.session.flush()
     return redirect('/login')
@@ -293,5 +299,11 @@ def logout(request):
 @login_requerido2
 def pagina(request):
     template = 'inicial.html'
+    if request.method == 'GET':
+        return render(request, template)
+
+@login_requerido2
+def formulario_credenciales(request):
+    template = 'credencialesFormulario.html'
     if request.method == 'GET':
         return render(request, template)
