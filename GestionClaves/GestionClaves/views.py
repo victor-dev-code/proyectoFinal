@@ -162,6 +162,7 @@ def token_repetido(usuarios):
     if len(tokenT) > 0:
         return True
     return False 
+
 '''recoleccion de errores'''
 def recolectar_errores_registro(usuarios, confirmacion, password):
     errores = []
