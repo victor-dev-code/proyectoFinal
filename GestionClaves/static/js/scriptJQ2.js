@@ -32,7 +32,7 @@ $(document).ready(function() {
         },
         nomCuenta: {
           required: true,
-          minlength: 20
+          minlength: 5
         },
         usuario: {
           required: true,
@@ -63,7 +63,7 @@ $(document).ready(function() {
           minlength: "el token debe de tener 46 caracteres "
         },
         nomCuenta: {
-          minlength: "el nombre de la cuenta debe de tener 20 caracteres "
+          minlength: "el nombre de la cuenta debe de tener 5 caracteres "
         },
       }
     });
