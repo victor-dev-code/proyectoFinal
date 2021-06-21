@@ -60,10 +60,10 @@ $(document).ready(function() {
           minlength: "el chat id debe de tener 9 caracteres "
         },
         tokt: {
-          minlength: "el chat id debe de tener 46 caracteres "
+          minlength: "el token debe de tener 46 caracteres "
         },
         nomCuenta: {
-          minlength: "el chat id debe de tener 20 caracteres "
+          minlength: "el nombre de la cuenta debe de tener 20 caracteres "
         },
       }
     });
