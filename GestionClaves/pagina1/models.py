@@ -12,7 +12,6 @@ class Usuarios(models.Model):
     iv = models.CharField(max_length=24)
     salt = models.CharField(max_length=100)
     tokenEnviado = models.CharField(max_length=8)
-    token_tem = models.DateTimeField()
 
 class IntentosIP(models.Model):
     ip = models.GenericIPAddressField(primary_key=True)
