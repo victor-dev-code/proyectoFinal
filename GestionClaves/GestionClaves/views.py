@@ -343,8 +343,7 @@ def formulario_credenciales(request):
 
 @login_requerido2  	  	
 def ListaAsociados(request):
-        Credencial=Credenciales.objects.all()
-        return render(request, 'asociadas.html', {"Credencial":Credencial})   	
+    template = 'asociadas.html'
+    Credencial=Credenciales.objects.all().filter()		
+    return render(request, template ,{"Credencial":Credencial})  	
     	
-    	
-    		
