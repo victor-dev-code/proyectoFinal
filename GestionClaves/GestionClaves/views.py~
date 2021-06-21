@@ -296,7 +296,6 @@ def pagina(request):
     if request.method == 'GET':
         return render(request, template)
 
-'''
 @login_requerido2
 def formulario_credenciales(request):
 	 template = 'credencialesFormulario.html'
@@ -324,8 +323,6 @@ def formulario_credenciales(request):
    	  
    	  usuarios.save()
    	  return redirect('/pagina')
-   	  
-   	  '''
     	
     	
     	
