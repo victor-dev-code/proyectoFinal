@@ -38,9 +38,12 @@
 
             <div class="form-group">
                 <div class="col-3 col-s-12"></div>
-                <label>URL: </label><br>
-                <input  type="text" id="url" name="url" placeholder="URL" class="form-control" value="{{ credenciales.url }}" />
+                <label>Contraseña para la nueva cuenta: </label><br>
+                <input  type="password" id="password" name="password" placeholder="Contraseña" class="form-control" value="{{ credenciales.contraseña }}" />
             </div>
+            
+            <input type="submit" value="auto generar contraseña" />
+
 
             <div class="form-group">
                 <div class="col-3 col-s-12"></div>

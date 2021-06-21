@@ -296,7 +296,6 @@ def pagina(request):
     if request.method == 'GET':
         return render(request, template)
 
-'''
 @login_requerido2
 def formulario_credenciales(request):
 	 template = 'credencialesFormulario.html'
@@ -309,8 +308,8 @@ def formulario_credenciales(request):
    	  password = request.POST.get('password', '').strip()
    	  
    	  iv = os.urandom(16)
-   	  password = bytes(string, 'utf-8')
    	  llave_aes = generar_llave_aes_from_password(password)
+   	  password = bytes(password, 'utf-8') 	  
    	  password_cifrado = cifrar(password, llave_aes, iv)
    	  password = convertir_cadena_para_almacenar(password_cifrado)
    	  iv = convertir_cadena_para_almacenar(iv)
@@ -322,10 +321,8 @@ def formulario_credenciales(request):
    	  credenciales.password = password
    	  credenciales.detallesExtra = detallesExtra
    	  
-   	  usuarios.save()
+   	  credenciales.save()
    	  return redirect('/pagina')
-   	  
-   	  '''
     	
     	
     	
