@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 import os, html, re, string, requests, base64, sys, datetime
 from pagina1 import models
+from pagina1.models import Credenciales
 from .utils import generar_hash, convertir_cadena_para_almacenar, validar_password, convertir_almacenado_a_original, validar_usuario, validar_password_almacenado
 from .cifrar_aes import generar_llave_aes_from_password, cifrar, descifrar
 from .generarLlaves import generar_llave_privada, generar_llave_publica, convertir_llave_privada_bytes, convertir_llave_publica_bytes, convertir_bytes_llave_privada, convertir_bytes_llave_publica
@@ -338,8 +339,12 @@ def formulario_credenciales(request):
    	  else:
    	  	errores = ['No existe el usuario asociado']    
    	  	return render(request, template, {'errores': errores})
-   	  	
-    	
+
+
+@login_requerido2  	  	
+def ListaAsociados(request):
+        Credencial=Credenciales.objects.all()
+        return render(request, 'asociadas.html', {"Credencial":Credencial})   	
     	
     	
     		

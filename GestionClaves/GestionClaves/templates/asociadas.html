@@ -1,0 +1,32 @@
+{% extends "base2.html" %}
+
+<title>{% block title %}lista de asociados{% endblock %}</title>
+
+{% block header %}
+ <h1>asociados</h1>
+
+{% endblock %}
+
+{% block content %}
+ <table class="table table-striped" border="1" id="tabla" style="text-align:center">
+<tbody id="tbody">
+<thead>
+<tr>
+<th class = "text-center">nombreCuenta:</th>
+<th class = "text-center">usuario:</th>
+<th class = "text-center">detallesExtra:</th>
+
+
+</tr>
+</thead>
+{% for Credenciales in Credencial %}
+<tr>
+<td style="text-align:center">{{Credenciales.nombreCuenta}}</td>
+<td style="text-align:center">{{Credenciales.usuario}}</td>
+<td style="text-align:center">{{Credenciales.detallesExtra}}</td>
+</tr>
+{%  endfor %}
+</tbody>
+</table>
+
+ {%  endblock %}
