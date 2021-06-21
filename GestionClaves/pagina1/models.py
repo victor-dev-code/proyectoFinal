@@ -20,10 +20,10 @@ class IntentosIP(models.Model):
 
 
 class Credenciales(models.Model):
+    id_usuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE, null=True)
     nombreCuenta = models.CharField(max_length=20)
-    usuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE)
+    usuario = models.CharField(max_length=50)
     iv = models.CharField(max_length=24)
     password = models.TextField(max_length=1000)
     url = models.CharField(max_length=120)
     detallesExtra = models.CharField(max_length=30)
-    
