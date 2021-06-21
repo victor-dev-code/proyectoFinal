@@ -33,6 +33,7 @@ def ip_cliente(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+    
 ''' intento de las ip del cliente '''
 def intento_ip(ip):
     guardar_registro = models.IntentosIP.objects.filter(pk=ip)
@@ -295,7 +296,16 @@ def pagina(request):
     template = 'inicial.html'
     if request.method == 'GET':
         return render(request, template)
-
+        
+def existe_usuario_asociado(usuario):
+	 nicks_almacenados = list(models.Usuarios.objects.values_list('nick').distinct())
+	 for nick in nicks_almacenados:
+	 	nick = ','.join(nick)
+	 	if nick == usuario:
+	 		return True
+	 	else:
+	 		return False
+	 
 @login_requerido2
 def formulario_credenciales(request):
 	 template = 'credencialesFormulario.html'
@@ -307,22 +317,28 @@ def formulario_credenciales(request):
    	  detallesExtra = request.POST.get('extra', '').strip()
    	  password = request.POST.get('password', '').strip()
    	  
-   	  iv = os.urandom(16)
-   	  llave_aes = generar_llave_aes_from_password(password)
-   	  password = bytes(password, 'utf-8') 	  
-   	  password_cifrado = cifrar(password, llave_aes, iv)
-   	  password = convertir_cadena_para_almacenar(password_cifrado)
-   	  iv = convertir_cadena_para_almacenar(iv)
-   	  
-   	  credenciales = models.Credenciales()
-   	  credenciales.nombreCuenta = nombreCuenta
-   	  credenciales.usuario = usuario
-   	  credenciales.iv = iv
-   	  credenciales.password = password
-   	  credenciales.detallesExtra = detallesExtra
-   	  
-   	  credenciales.save()
-   	  return redirect('/pagina')
+   	  existe = existe_usuario_asociado(usuario)
+   	  if existe == True:
+   	  	iv = os.urandom(16)
+   	  	llave_aes = generar_llave_aes_from_password(password)
+   	  	password = bytes(password, 'utf-8')
+   	  	password_cifrado = cifrar(password, llave_aes, iv)
+   	  	password = convertir_cadena_para_almacenar(password_cifrado)
+   	  	iv = convertir_cadena_para_almacenar(iv)
+   	  	
+   	  	credenciales = models.Credenciales()
+   	  	credenciales.nombreCuenta = nombreCuenta
+   	  	credenciales.usuario = usuario
+   	  	credenciales.iv = iv
+   	  	credenciales.password = password
+   	  	credenciales.detallesExtra = detallesExtra
+   	  	
+   	  	credenciales.save()
+   	  	return redirect('/pagina')
+   	  else:
+   	  	errores = ['No existe el usuario asociado']    
+   	  	return render(request, template, {'errores': errores})
+   	  	
     	
     	
     	
