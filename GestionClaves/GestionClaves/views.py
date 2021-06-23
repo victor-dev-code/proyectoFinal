@@ -10,6 +10,8 @@ from .cifrar_aes import generar_llave_aes_from_password, cifrar, descifrar
 from .generarLlaves import generar_llave_privada, generar_llave_publica, convertir_llave_privada_bytes, convertir_llave_publica_bytes, convertir_bytes_llave_privada, convertir_bytes_llave_publica
 from GestionClaves.decoradores import login_requerido, login_requerido2
 from datetime import timezone
+import string
+import random
 
 '''mandar mensaje bot telegram'''
 def mandar_mensajeBot(request):
@@ -17,7 +19,8 @@ def mandar_mensajeBot(request):
     datos_usuarios = models.Usuarios.objects.get(nick=nick)
     chat_id = datos_usuarios.chatID
     token = datos_usuarios.tokenT
-    mensaje = base64.b64encode(os.urandom(5)).decode('utf-8')
+    mensaje = ''.join(random.sample(string.ascii_letters + string.digits, 8))
+    #mensaje = base64.b64encode(os.urandom(5)).decode('utf-8')
     send_text = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&parse_mode=Markdown&text=' + mensaje
     requests.get(send_text)
     ''' guaradar token enviado a telegram en la base de datos '''
@@ -345,6 +348,6 @@ def formulario_credenciales(request):
 def ListaAsociados(request):
     template = 'asociadas.html'
     usr = request.session.get('usuario', 'anonimo')
-    Credencial=Credenciales.objects.filter(usuario='elvictor99')
+    Credencial=Credenciales.objects.filter(nombreCuenta='elvictor99')
     return render(request, template ,{"Credencial":Credencial})  	
     	
