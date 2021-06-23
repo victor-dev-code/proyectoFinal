@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 import os, html, re, string, requests, base64, sys, datetime
 from pagina1 import models
-from pagina1.models import Credenciales
+from pagina1.models import Credenciales, Usuarios
 from .utils import generar_hash, convertir_cadena_para_almacenar, validar_password, convertir_almacenado_a_original, validar_usuario, validar_password_almacenado
 from .cifrar_aes import generar_llave_aes_from_password, cifrar, descifrar
 from .generarLlaves import generar_llave_privada, generar_llave_publica, convertir_llave_privada_bytes, convertir_llave_publica_bytes, convertir_bytes_llave_privada, convertir_bytes_llave_publica
@@ -20,12 +20,12 @@ def mandar_mensajeBot(request):
     chat_id = datos_usuarios.chatID
     token = datos_usuarios.tokenT
     mensaje = ''.join(random.sample(string.ascii_letters + string.digits, 8))
-    #mensaje = base64.b64encode(os.urandom(5)).decode('utf-8')
     send_text = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&parse_mode=Markdown&text=' + mensaje
     requests.get(send_text)
     ''' guaradar token enviado a telegram en la base de datos '''
     models.Usuarios()
-    models.Usuarios.objects.filter(nick=nick).update(tokenEnviado=mensaje)
+    models.Usuarios.objects.filter(nick=nick).update(tokenEnviado=mensaje, tokenTem=datetime.datetime.now())
+
     
 
 
@@ -78,7 +78,10 @@ def token(request):
         if intento_ip(ip):
             token = request.POST.get('token', '').strip()
             try:
-                models.Usuarios.objects.get(tokenEnviado=token)
+                t = models.Usuarios.objects.get(tokenEnviado=token)
+                if (tiempo_ahora(t.tokenTem) > 180):  
+                    errores={'el token ha expirado'}
+                    return render(request,template,{'errores':errores})
                 request.session['logueado2'] = True
                 request.session['usuario'] = token
                 return redirect('/pagina')
@@ -348,6 +351,5 @@ def formulario_credenciales(request):
 def ListaAsociados(request):
     template = 'asociadas.html'
     usr = request.session.get('usuario', 'anonimo')
-    Credencial=Credenciales.objects.filter(nombreCuenta='elvictor99')
+    Credencial=Credenciales.objects.filter(nombreCuenta='coco2')
     return render(request, template ,{"Credencial":Credencial})  	
-    	
