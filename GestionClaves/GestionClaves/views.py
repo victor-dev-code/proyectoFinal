@@ -319,33 +319,29 @@ def formulario_credenciales(request):
 	 if request.method == 'GET':
 		  return render(request, template)
 	 elif request.method == 'POST':
-   	  nombreCuenta = request.POST.get('nomCuenta', '').strip()
+   	  nombreCuenta = request.POST.get('nomSitio', '').strip()
    	  usuario = request.POST.get('usuario', '').strip()
+   	  url = request.POST.get('url', '').strip()
    	  detallesExtra = request.POST.get('extra', '').strip()
    	  password = request.POST.get('password', '').strip()
    	  
-   	  existe = existe_usuario_asociado(usuario)
-   	  if existe == True:
-   	  	iv = os.urandom(16)
-   	  	llave_aes = generar_llave_aes_from_password(password)
-   	  	password = bytes(password, 'utf-8')
-   	  	password_cifrado = cifrar(password, llave_aes, iv)
-   	  	password = convertir_cadena_para_almacenar(password_cifrado)
-   	  	iv = convertir_cadena_para_almacenar(iv)
+   	  iv = os.urandom(16)
+   	  llave_aes = generar_llave_aes_from_password(password)
+   	  password = bytes(password, 'utf-8')
+   	  password_cifrado = cifrar(password, llave_aes, iv)
+   	  password = convertir_cadena_para_almacenar(password_cifrado)
+   	  iv = convertir_cadena_para_almacenar(iv)
+   	  
+   	  credenciales = models.Credenciales()
+   	  credenciales.nombreCuenta = nombreCuenta
+   	  credenciales.usuario = usuario
+   	  credenciales.iv = iv
+   	  credenciales.password = password
+   	  credenciales.url = url
+   	  credenciales.detallesExtra = detallesExtra
    	  	
-   	  	credenciales = models.Credenciales()
-   	  	credenciales.nombreCuenta = nombreCuenta
-   	  	credenciales.usuario = usuario
-   	  	credenciales.iv = iv
-   	  	credenciales.password = password
-   	  	credenciales.detallesExtra = detallesExtra
-   	  	
-   	  	credenciales.save()
-   	  	return redirect('/pagina')
-   	  else:
-   	  	errores = ['No existe el usuario asociado']    
-   	  	return render(request, template, {'errores': errores})
-
+   	  credenciales.save()
+   	  return redirect('/pagina')
 
 @login_requerido2  	  	
 def ListaAsociados(request):
