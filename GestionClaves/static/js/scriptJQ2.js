@@ -30,7 +30,7 @@ $(document).ready(function() {
           required: true,
           email: true
         },
-        nomCuenta: {
+        nomSitio: {
           required: true,
           minlength: 5
         },
@@ -38,6 +38,18 @@ $(document).ready(function() {
           required: true,
           minlength: 5
         },
+        password: {
+          required: true,
+          minlength: 10
+        },
+        url: {
+          required: true,
+          minlength: 20
+        },
+        extra: {
+          required: true,
+          minlength: 10
+        }
       },
   
       messages : {
@@ -62,9 +74,21 @@ $(document).ready(function() {
         tokt: {
           minlength: "el token debe de tener 46 caracteres "
         },
-        nomCuenta: {
-          minlength: "el nombre de la cuenta debe de tener 5 caracteres "
+        nomSitio: {
+          minlength: "Escribe el nombre del sitio en el que usas la contraseña "
         },
+        password: {
+          minlength: "escribe la contraseña del sitio en el que la usas"
+        },
+        usuario: {
+          minlength: "escribe el usuario del sitio en el que lo usas"
+        },
+        url: {
+          minlength: "escribe la url del sitio a la que pertenece la cuenta"
+        },
+        extra: {
+          minlength: "escribe aqui los detalles importantes de la cuenta"
+        }
       }
     });
   });
