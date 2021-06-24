@@ -327,7 +327,7 @@ def formulario_credenciales(request):
    	  
    	  iv = os.urandom(16)
    	  llave_aes = generar_llave_aes_from_password(password)
-   	  password = bytes(password, 'utf-8')
+   	  password = password.encode('utf-8')
    	  password_cifrado = cifrar(password, llave_aes, iv)
    	  password = convertir_cadena_para_almacenar(password_cifrado)
    	  iv = convertir_cadena_para_almacenar(iv)
