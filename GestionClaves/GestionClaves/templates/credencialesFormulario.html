@@ -4,6 +4,7 @@
 {% block header %}
     Registrar usuarios al sistema
     <script src="/static/js/scriptJQ2.js"></script>
+    <script src="/static/js/generar.js"></script>
 {% endblock %}
 
 
@@ -41,8 +42,8 @@
                 <label>Contraseña: </label><br>
                 <input  type="password" id="password" name="password" placeholder="Contraseña" class="form-control" value="{{ credenciales.contraseña }}" />
             </div>
-            
-            <input type="submit" value="auto generar contraseña" />
+            <input type="button" id="generar" value="auto generar contraseña" onclick="generarPassword()"/>
+        
             
             <div class="form-group">
                 <div class="col-3 col-s-12"></div>

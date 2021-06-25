@@ -40,7 +40,7 @@ $(document).ready(function() {
         },
         password: {
           required: true,
-          minlength: 10
+          minlength: 8
         },
         url: {
           required: true,
@@ -78,16 +78,16 @@ $(document).ready(function() {
           minlength: "Escribe el nombre del sitio en el que usas la contraseña "
         },
         password: {
-          minlength: "escribe la contraseña del sitio en el que la usas"
+          minlength: "escribe la contraseña del sitio en el que la usas debe tener almenos 8 caracteres si la generas aleatoriamente tendra mas 10 caracteres"
         },
         usuario: {
-          minlength: "escribe el usuario del sitio en el que lo usas"
+          minlength: "escribe el usuario del sitio en el que lo usas minimo 5 caracteres"
         },
         url: {
-          minlength: "escribe la url del sitio a la que pertenece la cuenta"
+          minlength: "escribe la url del sitio a la que pertenece la cuenta minimo 20 caracteres"
         },
         extra: {
-          minlength: "escribe aqui los detalles importantes de la cuenta"
+          minlength: "escribe aqui los detalles importantes de la cuenta minimo 10 caracteres"
         }
       }
     });

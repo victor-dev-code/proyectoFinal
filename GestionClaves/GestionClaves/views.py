@@ -347,5 +347,5 @@ def formulario_credenciales(request):
 def ListaAsociados(request):
     template = 'asociadas.html'
     usr = request.session.get('usuario', 'anonimo')
-    Credencial=Credenciales.objects.filter(usuario='prueba')
+    Credencial=Credenciales.objects.filter(usuario='elyepas')
     return render(request, template ,{"Credencial":Credencial})  	
