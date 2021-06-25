@@ -13,16 +13,16 @@ from datetime import timezone
 import string
 import random
 
-'''mandar mensaje bot telegram'''
-def mandar_mensajeBot(request):
+'''Manda mensaje bot telegram con el token para ingresar a la cuenta, también lo almacena en 
+   la base de datos'''
+def mandar_mensaje_al_bot(request):
     nick = request.session.get('usuario', 'anonimo')
-    datos_usuarios = models.Usuarios.objects.get(nick=nick)
-    chat_id = datos_usuarios.chatID
-    token = datos_usuarios.tokenT
+    datos_almacenados = models.Usuarios.objects.get(nick=nick)
+    chat_id = datos_almacenados.chatID
+    token = datos_almacenados.tokenT
     mensaje = ''.join(random.sample(string.ascii_letters + string.digits, 8))
-    send_text = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&parse_mode=Markdown&text=' + mensaje
-    requests.get(send_text)
-    ''' guaradar token enviado a telegram en la base de datos '''
+    mensaje_enviado = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&parse_mode=Markdown&text=' + mensaje
+    requests.get(mensaje_enviado)
     models.Usuarios()
     models.Usuarios.objects.filter(nick=nick).update(tokenEnviado=mensaje, tokenTem=datetime.datetime.now())
 
@@ -114,7 +114,7 @@ def login(request):
                 request.session['logueado'] = True
                 request.session['usuario'] = nick
                 '''envia mensaje a telegram despues de pasar el login'''
-                mandar_mensajeBot(request)
+                mandar_mensaje_al_bot(request)
                 return redirect('/token')
             except:
                 errores = ['credenciales de usuario o nick incorrectos']    
