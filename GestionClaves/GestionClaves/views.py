@@ -71,6 +71,7 @@ def tiempo_ahora(tiempo):
 @login_requerido
 def token(request):
     template = 'token.html'
+    nick = request.session.get('usuario', 'anonimo')
     if request.method == 'GET':
         return render(request, template)
     elif request.method == 'POST':
@@ -83,7 +84,7 @@ def token(request):
                     errores={'el token ha expirado'}
                     return render(request,template,{'errores':errores})
                 request.session['logueado2'] = True
-                request.session['usuario'] = token
+                request.session['usuario'] = nick
                 return redirect('/pagina')
             except:
                 errores = ['token incorrecto']
@@ -346,6 +347,5 @@ def formulario_credenciales(request):
 @login_requerido2  	  	
 def ListaAsociados(request):
     template = 'asociadas.html'
-    usr = request.session.get('usuario', 'anonimo')
-    Credencial=Credenciales.objects.filter(usuario='elyepas')
+    Credencial=Credenciales.objects.all()
     return render(request, template ,{"Credencial":Credencial})  	
