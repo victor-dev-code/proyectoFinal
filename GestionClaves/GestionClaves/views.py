@@ -26,17 +26,24 @@ def mandar_mensaje_al_bot(request):
     models.Usuarios()
     models.Usuarios.objects.filter(nick=nick).update(tokenEnviado=mensaje, tokenTem=datetime.datetime.now())
 
-    
-
-
-''' ibtener ip del cliente '''
-def ip_cliente(request):
+''' Se obtiene la ip del cliente que esta tratando de ingresar al sistema '''
+def obtener_ip_cliente(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
+        ip_obtenida = x_forwarded_for.split(',')[0]
     else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
+        ip_obtenida = request.META.get('REMOTE_ADDR')
+    return ip_obtenida
+
+''' Se recupera el tiempo actual (en segundos) para poder hacer la diferencia
+    entre la hora almacenada y la actual'''
+def restar_tiempo_actual_y_almacenado(tiempo_almacenado):
+    tiempo_actual =  datetime.datetime.now(timezone.utc)
+    diferencia = tiempo_actual - tiempo_almacenado
+    return diferencia.seconds
+    
+def obtener_numero_de_intentos(ip_cliente):
+	pass
     
 ''' intento de las ip del cliente '''
 def intento_ip(ip):
@@ -46,7 +53,7 @@ def intento_ip(ip):
         registro.save()
         return True
     guardar_registro = guardar_registro[0]
-    diferencia_tiempo = tiempo_ahora(guardar_registro.last_Peticion)
+    diferencia_tiempo = restar_tiempo_actual_y_almacenado(guardar_registro.last_Peticion)
     if diferencia_tiempo > 60:
         guardar_registro.last_Peticion = datetime.datetime.now()
         guardar_registro.cont = 1
@@ -62,11 +69,6 @@ def intento_ip(ip):
             guardar_registro.last_Peticion = datetime.datetime.now()
             return False
 
-def tiempo_ahora(tiempo):
-    ahora =  datetime.datetime.now(timezone.utc)
-    diferencia = ahora - tiempo
-    return diferencia.seconds
-
 ''' pagina de token'''
 @login_requerido
 def token(request):
@@ -75,12 +77,12 @@ def token(request):
     if request.method == 'GET':
         return render(request, template)
     elif request.method == 'POST':
-        ip = ip_cliente(request)
+        ip = obtener_ip_cliente(request)
         if intento_ip(ip):
             token = request.POST.get('token', '').strip()
             try:
                 t = models.Usuarios.objects.get(tokenEnviado=token)
-                if (tiempo_ahora(t.tokenTem) > 180):  
+                if (restar_tiempo_actual_y_almacenado(t.tokenTem) > 180):  
                     errores={'el token ha expirado'}
                     return render(request,template,{'errores':errores})
                 request.session['logueado2'] = True
@@ -102,7 +104,7 @@ def login(request):
             return redirect('/pagina')
         return render(request, template)
     elif request.method == 'POST':
-        ip = ip_cliente(request)
+        ip = obtener_ip_cliente(request)
         if intento_ip(ip):
             nick = request.POST.get('nick', '').strip()
             password = request.POST.get('contraseña', '').strip()
@@ -224,7 +226,7 @@ def formulario_registro(request):
     if request.method == 'GET':
         return render(request, template)
     elif request.method == 'POST':
-        ip = ip_cliente(request)
+        ip = obtener_ip_cliente(request)
         if intento_ip(ip):
             '''Recuperacion de datos ingresados desde la pagina'''
             nombre = request.POST.get('nomCompleto', '').strip()
