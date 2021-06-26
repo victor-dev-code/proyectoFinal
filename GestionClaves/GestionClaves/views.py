@@ -322,6 +322,7 @@ def existe_usuario_asociado(usuario):
 	 
 @login_requerido2
 def formulario_credenciales(request):
+	 nick = request.session.get('usuario', 'anonimo')
 	 template = 'credencialesFormulario.html'
 	 if request.method == 'GET':
 		  return render(request, template)
@@ -332,11 +333,7 @@ def formulario_credenciales(request):
    	  detallesExtra = request.POST.get('extra', '').strip()
    	  password = request.POST.get('password', '').strip()
    	  
-   	  datos_almacenados = models.Usuarios.objects.get(nick=usuario)
-   	  #llave_foranea = datos_almacenados.values_list('pk', flat=True)
-   	  
-   	  #llave_foranea = ','.join(llave_foranea)
-   	  
+   	  datos_almacenados = models.Usuarios.objects.get(nick=nick)   	  
    	  
    	  iv = os.urandom(16)
    	  llave_aes = generar_llave_aes_from_password(password)
