@@ -73,7 +73,13 @@ lista de cuentas registradas
     <li>detalles
         <ul>
             <li><p>usuario:{{Credenciales.usuario}}</p></li>
-            <li><p>contraseña:{{Credenciales.password}}</p></li>
+            <li>
+                <details><summary>contraseña:</summary>
+            <ul>
+             <li>{{Credenciales.password}}</li>
+            </ul>
+        </details>
+            </li>
             <li><p>url:{{Credenciales.url}}</p></li>
             <li><p>detalles extra:{{Credenciales.detallesExtra}}</p></li>
         </ul>
