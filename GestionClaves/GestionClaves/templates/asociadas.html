@@ -3,11 +3,26 @@
 <title>{% block title %}lista de asociados{% endblock %}</title>
 
 {% block header %}
- <h1>asociados</h1>
+lista de cuentas registradas
+<script src="/static/js/scriptJQ2.js"></script>
+<script src="/static/js/generar.js"></script>
+<style>
+.centrar-listas {
+	text-align: center;
+}
 
+.centrar-listas ul,
+.centrar-listas ol {
+	text-align: left;
+	display: inline-block;
+    list-style: disc;
+}
+</style>
 {% endblock %}
 
 {% block content %}
+
+<!--
  <table class="table table-striped" border="1" id="tabla" style="text-align:center">
 <tbody id="tbody">
 <thead>
@@ -29,5 +44,30 @@
 {%  endfor %}
 </tbody>
 </table>
+-->
 
+{% for Credenciales in Credencial %}
+
+<div class="centrar-listas">
+    <ul>
+        <ol>
+           
+            <details>
+            <summary>{{Credenciales.nombreCuenta}}</summary>    
+            <li><p>usuario:{{Credenciales.usuario}}</p></li>
+            <li><p>contraseña:{{Credenciales.password}}</p></li>
+            <li><p>url:{{Credenciales.url}}</p></li>
+            <li><p>detalles:{{Credenciales.detallesExtra}}</p></li>
+            </details>
+         
+        </ol>
+    
+    </ul>
+
+ </div>
+    
+
+            
+{%  endfor %}
+ 
  {%  endblock %}
