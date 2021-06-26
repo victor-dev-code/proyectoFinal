@@ -42,8 +42,12 @@ def restar_tiempo_actual_y_almacenado(tiempo_almacenado):
     diferencia = tiempo_actual - tiempo_almacenado
     return diferencia.seconds
     
-def obtener_numero_de_intentos(ip_cliente):
-	pass
+def comparar_tiempo(ip_cliente):
+	 pass
+    
+def verificar_numero_de_intentos(ip_cliente):
+	 pass
+	 
     
 ''' intento de las ip del cliente '''
 def intento_ip(ip):
@@ -60,7 +64,7 @@ def intento_ip(ip):
         guardar_registro.save()
         return True
     else:
-        if guardar_registro.cont < 3:
+        if guardar_registro.cont < 2:
              guardar_registro.last_Peticion = datetime.datetime.now()
              guardar_registro.cont += 1
              guardar_registro.save()
@@ -69,7 +73,7 @@ def intento_ip(ip):
             guardar_registro.last_Peticion = datetime.datetime.now()
             return False
 
-''' pagina de token'''
+''' Página del token, almacena el token y verifica si ha expirado o si es correcto '''
 @login_requerido
 def token(request):
     template = 'token.html'
@@ -77,13 +81,13 @@ def token(request):
     if request.method == 'GET':
         return render(request, template)
     elif request.method == 'POST':
-        ip = obtener_ip_cliente(request)
-        if intento_ip(ip):
+        ip_cliente = obtener_ip_cliente(request)
+        if intento_ip(ip_cliente):
             token = request.POST.get('token', '').strip()
             try:
-                t = models.Usuarios.objects.get(tokenEnviado=token)
-                if (restar_tiempo_actual_y_almacenado(t.tokenTem) > 180):  
-                    errores={'el token ha expirado'}
+                token_almacenado = models.Usuarios.objects.get(tokenEnviado=token)
+                if (restar_tiempo_actual_y_almacenado(token_almacenado.tokenTem) > 180):  
+                    errores={'El token ha expirado'}
                     return render(request,template,{'errores':errores})
                 request.session['logueado2'] = True
                 request.session['usuario'] = nick
