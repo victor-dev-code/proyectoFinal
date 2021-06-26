@@ -47,7 +47,7 @@ lista de cuentas registradas
 -->
 
 {% for Credenciales in Credencial %}
-
+<!--
 <div class="centrar-listas">
     <ul>
         <ol>
@@ -65,9 +65,23 @@ lista de cuentas registradas
     </ul>
 
  </div>
-    
+-->
 
-            
+<ul>
+    <details>
+        <summary>{{Credenciales.nombreCuenta}}</summary>  
+    <li>detalles
+        <ul>
+            <li><p>usuario:{{Credenciales.usuario}}</p></li>
+            <li><p>contraseña:{{Credenciales.password}}</p></li>
+            <li><p>url:{{Credenciales.url}}</p></li>
+            <li><p>detalles extra:{{Credenciales.detallesExtra}}</p></li>
+        </ul>
+    </li>
+</details>
+
+  </ul>
+ 
 {%  endfor %}
  
  {%  endblock %}
