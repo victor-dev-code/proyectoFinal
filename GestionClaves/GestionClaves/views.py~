@@ -332,6 +332,12 @@ def formulario_credenciales(request):
    	  detallesExtra = request.POST.get('extra', '').strip()
    	  password = request.POST.get('password', '').strip()
    	  
+   	  datos_almacenados = models.Usuarios.objects.get(nick=usuario)
+   	  #llave_foranea = datos_almacenados.values_list('pk', flat=True)
+   	  
+   	  #llave_foranea = ','.join(llave_foranea)
+   	  
+   	  
    	  iv = os.urandom(16)
    	  llave_aes = generar_llave_aes_from_password(password)
    	  password = password.encode('utf-8')
@@ -346,6 +352,7 @@ def formulario_credenciales(request):
    	  credenciales.password = password
    	  credenciales.url = url
    	  credenciales.detallesExtra = detallesExtra
+   	  credenciales.id_usuario = datos_almacenados
    	  	
    	  credenciales.save()
    	  return redirect('/pagina')
