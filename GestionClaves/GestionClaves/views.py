@@ -363,5 +363,4 @@ def ListaAsociados(request):
     nick = request.session.get('usuario', 'anonimo')
     datos_almacenados = models.Usuarios.objects.get(nick=nick)
     Credencial=models.Credenciales.objects.filter(id_usuario=datos_almacenados)
-    #Credencial=Credenciales.objects.all()
     return render(request, template ,{"Credencial":Credencial})  	
