@@ -37,6 +37,7 @@
         								<form class='form-horizontal' id="form" action="/ListaAsociados" method="POST">
             						{% csrf_token %}
             							<div class="form-group">
+            								<input type="hidden" name="idCuenta" name="idCuenta" value="{{ Credenciales.id }}" />
                 							<div class="col-3 col-s-12"></div>
                 							<label>Nuevo sitio asociado: </label><br>
                 							<input type="text" id="nombreCuenta" name="nombreCuenta" placeholder="Sitio" class="form-control" value="{{ credenciales.nombreCuenta }}" />

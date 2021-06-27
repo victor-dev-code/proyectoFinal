@@ -34,9 +34,10 @@
             				<ul>
             					<!--button><a href="" id="{{ Credenciales.id }}" name="{{ Credenciales.id }}" >Editar</a></button-->
             					<div class="container col-8">
-        								<form class='form-horizontal' id="form" action="/editar_credenciales" method="POST">
+        								<form class='form-horizontal' id="form" action="/ListaAsociados" method="POST">
             						{% csrf_token %}
             							<div class="form-group">
+            								<input type="hidden" name="{{ Credenciales.id }}" name="{{ Credenciales.id }}" value="{{ Credenciales.id }}" />
                 							<div class="col-3 col-s-12"></div>
                 							<label>Nuevo sitio asociado: </label><br>
                 							<input type="text" id="nombreCuenta" name="nombreCuenta" placeholder="Sitio" class="form-control" value="{{ credenciales.nombreCuenta }}" />
