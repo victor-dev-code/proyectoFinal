@@ -333,7 +333,7 @@ def formulario_credenciales(request):
    	  detallesExtra = request.POST.get('extra', '').strip()
    	  password = request.POST.get('password', '').strip()
    	  
-   	  datos_almacenados = models.Usuarios.objects.get(nick=nick)   	  
+   	  llave_foranea = models.Usuarios.objects.get(nick=nick)   	  
    	  
    	  iv = os.urandom(16)
    	  llave_aes = generar_llave_aes_from_password(password)
@@ -349,7 +349,7 @@ def formulario_credenciales(request):
    	  credenciales.password = password
    	  credenciales.url = url
    	  credenciales.detallesExtra = detallesExtra
-   	  credenciales.id_usuario = datos_almacenados
+   	  credenciales.id_usuario = llave_foranea
    	  	
    	  credenciales.save()
    	  return redirect('/pagina')
@@ -359,5 +359,9 @@ def ListaAsociados(request):
     template = 'asociadas.html'
     nick = request.session.get('usuario', 'anonimo')
     datos_almacenados = models.Usuarios.objects.get(nick=nick)
-    Credencial=models.Credenciales.objects.filter(id_usuario=datos_almacenados)
-    return render(request, template ,{"Credencial":Credencial})  	
+    Credencial = models.Credenciales.objects.filter(id_usuario=datos_almacenados)
+    
+    return render(request, template ,{"Credencial":Credencial})
+    
+    
+      	

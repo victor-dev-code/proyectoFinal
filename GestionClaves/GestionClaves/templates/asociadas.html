@@ -1,93 +1,40 @@
 {% extends "base2.html" %}
 
-<title>{% block title %}lista de asociados{% endblock %}</title>
+	<title>{% block title %}lista de asociados{% endblock %}</title>
 
 {% block header %}
-lista de cuentas registradas
-<script src="/static/js/scriptJQ2.js"></script>
-<script src="/static/js/generar.js"></script>
-<style>
-.centrar-listas {
-	text-align: center;
-}
-
-.centrar-listas ul,
-.centrar-listas ol {
-	text-align: left;
-	display: inline-block;
-    list-style: disc;
-}
-</style>
+	lista de cuentas registradas
+	<script src="/static/js/scriptJQ2.js"></script>
+	<script src="/static/js/generar.js"></script>
 {% endblock %}
 
 {% block content %}
 
-<!--
- <table class="table table-striped" border="1" id="tabla" style="text-align:center">
-<tbody id="tbody">
-<thead>
-<tr>
-<th class = "text-center">nombreSitio:</th>
-<th class = "text-center">usuario:</th>
-<th class = "text-center">URL:</th>
-<th class = "text-center">detallesExtra:</th>
+<div class="container col-6 p-6 my-6 bg-primary text-white">
+	{% for Credenciales in Credencial %}
 
-</tr>
-</thead>
-{% for Credenciales in Credencial %}
-<tr>
-<td style="text-align:center">{{Credenciales.nombreCuenta}}</td>
-<td style="text-align:center">{{Credenciales.usuario}}</td>
-<td style="text-align:center">{{Credenciales.url}}</td>
-<td style="text-align:center">{{Credenciales.detallesExtra}}</td>
-</tr>
-{%  endfor %}
-</tbody>
-</table>
--->
-
-{% for Credenciales in Credencial %}
-<!--
-<div class="centrar-listas">
-    <ul>
-        <ol>
-           
-            <details>
-            <summary>{{Credenciales.nombreCuenta}}</summary>    
-            <li><p>usuario:{{Credenciales.usuario}}</p></li>
-            <li><p>contraseña:{{Credenciales.password}}</p></li>
-            <li><p>url:{{Credenciales.url}}</p></li>
-            <li><p>detalles:{{Credenciales.detallesExtra}}</p></li>
-            </details>
-         
-        </ol>
-    
-    </ul>
-
- </div>
--->
-
-<ul>
-    <details>
-        <summary>{{Credenciales.nombreCuenta}}</summary>  
-    <li>detalles
-        <ul>
-            <li><p>usuario:{{Credenciales.usuario}}</p></li>
-            <li>
-                <details><summary>contraseña:</summary>
-            <ul>
-             <li>{{Credenciales.password}}</li>
-            </ul>
-        </details>
-            </li>
-            <li><p>url:{{Credenciales.url}}</p></li>
-            <li><p>detalles extra:{{Credenciales.detallesExtra}}</p></li>
-        </ul>
-    </li>
-</details>
-
-  </ul>
+		<ul>
+			<details>
+        		<summary><strong>{{ Credenciales.nombreCuenta }}</strong></summary> 
  
-{%  endfor %}
+    			<em>Detalles</em>
+        			<ul>
+            		<li><p>usuario: {{Credenciales.usuario}}</p></li>
+            		<li>
+                		<details><summary>contraseña:</summary>
+            				<ul>
+             					<li>{{Credenciales.password}}</li>
+            				</ul>
+        					</details>
+            		</li>
+            		<li><p>url: {{Credenciales.url}}</p></li>
+            		<li><p>detalles extra: {{Credenciales.detallesExtra}}</p></li>
+        			</ul>
+    			
+			</details>
+  		</ul>
+ 
+	{%  endfor %}
+</div>
  
  {%  endblock %}

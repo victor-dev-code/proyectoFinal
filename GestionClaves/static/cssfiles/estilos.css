@@ -30,6 +30,11 @@
     font-size: 14px;
 
   }
+  
+  hr {
+  	 align-content: center;
+  	 color: white; 
+  }
 
 
   [class*="col-"] {
