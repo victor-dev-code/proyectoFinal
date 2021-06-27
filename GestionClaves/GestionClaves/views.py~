@@ -356,6 +356,7 @@ def formulario_credenciales(request):
    	  credenciales.url = url
    	  credenciales.detallesExtra = detallesExtra
    	  credenciales.id_usuario = llave_foranea
+   	  credenciales.master_password = master_password
    	  	
    	  credenciales.save()
    	  return redirect('/pagina')
@@ -366,7 +367,17 @@ def ListaAsociados(request):
     nick = request.session.get('usuario', 'anonimo')
     datos_almacenados = models.Usuarios.objects.get(nick=nick)
     Credencial = models.Credenciales.objects.filter(id_usuario=datos_almacenados)
-    
+    for registro in Credencial:
+    	iv = registro.iv
+    	master_password = registro.master_password
+    	password_almacenado = registro.password
+    	iv = convertir_almacenado_a_original(iv)
+    	password_cifrado = convertir_almacenado_a_original(password_almacenado)
+    	llave_aes = generar_llave_aes_from_password(master_password)
+    	password = descifrar(password_cifrado, llave_aes, iv)
+    	password_original = password.decode('utf-8')
+    	Credencial[n].password = password_original
+    	n+=1
     return render(request, template ,{"Credencial": Credencial})
     
     

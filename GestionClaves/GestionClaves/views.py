@@ -367,7 +367,18 @@ def ListaAsociados(request):
     nick = request.session.get('usuario', 'anonimo')
     datos_almacenados = models.Usuarios.objects.get(nick=nick)
     Credencial = models.Credenciales.objects.filter(id_usuario=datos_almacenados)
-    
+    numero = 0
+    for registro in Credencial:
+    	iv = registro.iv
+    	master_password = registro.master_password
+    	password_almacenado = registro.password
+    	iv = convertir_almacenado_a_original(iv)
+    	password_cifrado = convertir_almacenado_a_original(password_almacenado)
+    	llave_aes = generar_llave_aes_from_password(master_password)
+    	password = descifrar(password_cifrado, llave_aes, iv)
+    	password_original = password.decode('utf-8')
+    	Credencial[numero].password = password_original
+    	numero+=1
     return render(request, template ,{"Credencial": Credencial})
     
     
