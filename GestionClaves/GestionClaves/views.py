@@ -12,6 +12,11 @@ from GestionClaves.decoradores import login_requerido, login_requerido2
 from datetime import timezone
 import string
 import random
+import logging, platform
+
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO,
+                    filename='resgistros.log', filemode='a')
 
 '''Manda mensaje bot telegram con el token para ingresar a la cuenta, también lo almacena en 
    la base de datos'''
@@ -91,6 +96,7 @@ def token(request):
                     return render(request,template,{'errores':errores})
                 request.session['logueado2'] = True
                 request.session['usuario'] = nick
+                logging.info("usuario logueado:" + nick)
                 return redirect('/pagina')
             except:
                 errores = ['token incorrecto']
@@ -288,6 +294,7 @@ def formulario_registro(request):
             errores = recolectar_errores_registro(usuarios, password_confirmacion_hasheado, password)
             if not errores:
                 usuarios.save()
+                logging.info("usuario resgitrado:" + nick)
                 return redirect('/formulario_registro')
             else:
                 contexto = {'errores': errores, 'usuarios': usuarios}
@@ -361,8 +368,7 @@ def formulario_credenciales(request):
    	  credenciales.url = url
    	  credenciales.detallesExtra = detallesExtra
    	  credenciales.id_usuario = llave_foranea
-   	  credenciales.master_password = master_password
-   	  	
+   	  credenciales.master_password = master_password   	  	
    	  credenciales.save()
    	  return redirect('/pagina')
 
