@@ -370,6 +370,7 @@ def formulario_credenciales(request):
    	  credenciales.id_usuario = llave_foranea
    	  credenciales.master_password = master_password   	  	
    	  credenciales.save()
+   	  logging.info("el usuario:" + usuario + "registro las credenciales de la cuenta" + nombreCuenta)
    	  return redirect('/pagina')
 
 '''Función que toma los passwords asociados a las credenciales del usuario para obtenerlos descifrados '''
@@ -409,7 +410,5 @@ def ListaAsociados(request):
     	
     	models.Credenciales()
     	models.Credenciales.objects.filter(pk=id_cuenta).update(nombreCuenta=cuenta, usuario=usuario, password=password, iv=iv, master_password=master_password, url=url, detallesExtra=detalles_extra)
+    	logging.info("el usuario: " + usuario + "edito una cuenta: " + cuenta)
     	return redirect('/pagina')
-    	
-    	
-    	
