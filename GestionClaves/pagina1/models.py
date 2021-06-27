@@ -28,4 +28,4 @@ class Credenciales(models.Model):
     password = models.TextField(max_length=1000)
     url = models.CharField(max_length=120)
     detallesExtra = models.CharField(max_length=30)
-    llaveAes = models.CharField(max_length=24, null=True)
+    master_password = models.CharField(max_length=24, null=True)
