@@ -356,6 +356,7 @@ def formulario_credenciales(request):
    	  credenciales.url = url
    	  credenciales.detallesExtra = detallesExtra
    	  credenciales.id_usuario = llave_foranea
+   	  credenciales.master_password = master_password
    	  	
    	  credenciales.save()
    	  return redirect('/pagina')

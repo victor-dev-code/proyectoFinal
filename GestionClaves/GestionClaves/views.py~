@@ -320,7 +320,7 @@ def existe_usuario_asociado(usuario):
 	 	else:
 	 		return False
 
-def generar_llave_aes_from_password():
+def generar_master_password():
 	 caracteres = string.ascii_letters + string.digits + string.punctuation
 	 dimension = 16
 	 return ''.join(random.choice(caracteres) for _ in range(dimension))
