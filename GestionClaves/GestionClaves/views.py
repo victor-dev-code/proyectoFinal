@@ -412,3 +412,9 @@ def ListaAsociados(request):
     	models.Credenciales.objects.filter(pk=id_cuenta).update(nombreCuenta=cuenta, usuario=usuario, password=password, iv=iv, master_password=master_password, url=url, detallesExtra=detalles_extra)
     	logging.info("el usuario: " + usuario + "edito una cuenta: " + cuenta)
     	return redirect('/pagina')
+
+@login_requerido2
+def compartir(request):
+    template = 'inicial.html'
+    if request.method == 'GET':
+        return render(request, template)

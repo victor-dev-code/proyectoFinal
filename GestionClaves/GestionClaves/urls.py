@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from GestionClaves.views import login, token, formulario_registro, pagina, logout, formulario_credenciales, ListaAsociados
+from GestionClaves.views import login, token, formulario_registro, pagina, logout, formulario_credenciales, ListaAsociados, compartir
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +26,5 @@ urlpatterns = [
     path('logout', logout),
     path('formulario_credenciales', formulario_credenciales),
     path('ListaAsociados', ListaAsociados),
+    path('compartir', compartir),
 ]
