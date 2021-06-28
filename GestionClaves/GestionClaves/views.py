@@ -468,28 +468,29 @@ def llavePublica(request):
     elif request.method == 'POST':
     	  datos_almacenados = models.Usuarios.objects.get(nick=nick)
     	  usuario_compartido = request.POST.get('nick', '').strip()
-    	  llave_publica = request.POST.get('llave', '').strip()
+    	  llave_publica = request.POST.get('llave', '')
     	  
-    	  token = datos_almacenados.tokenT
-    	  chat_id = datos_almacenados.chatID
+    	  #token = datos_almacenados.tokenT
+    	  #chat_id = datos_almacenados.chatID
     	  
     	  datos_usuario_compartido = models.Usuarios.objects.get(nick = usuario_compartido)
     	  llave_publica_almacenada = datos_usuario_compartido.llave_publica
     	  id_usuario = datos_usuario_compartido.id
     	  
-    	  Credencial = models.Credenciales.objects.filter(pk=id_usuario)
+    	  Credencial = models.Credenciales.objects.filter(id_usuario_id=id_usuario)
     	  passwords = descifrar_passwords(Credencial)
     	  usuarios = Credencial.nick
     	  
     	  if llave_publica == llave_publica_almacenada:
-    	  	nombre_archivo = os.urandom(24)
-    	  	archivo = open('/static/%s.docx' % nombre_archivo, 'wt')
-    	  	archivo.write(usuarios + passwords)
-    	  	archivo.close()
-    	  	return redirect('/static/%s.docx' % nombre_archivo)
-    	  else:
-    	  	errores = ['La llave pública no es correcta']    
-    	  	return render(request, template, {'errores': errores})
+    	  	try:
+    	  		nombre_archivo = os.urandom(16)
+    	  		archivo = open('/home/pruebas/modificado/GestionClaves/static/%s.docx' % nombre_archivo, 'wt')
+    	  		archivo.write(usuarios)
+    	  		archivo.close()
+    	  		return redirect('/static/%s.docx' % nombre_archivo)
+    	  	except:
+    	  		errores = ['La llave pública no es correcta']    
+    	  		return render(request, template, {'errores': errores})
     	  		
     	      	  
     	  
