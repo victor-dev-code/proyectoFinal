@@ -49,6 +49,10 @@ $(document).ready(function() {
         extra: {
           required: true,
           minlength: 10
+        },
+        llave: {
+          required: true,
+          minlength: 10
         }
       },
   
@@ -88,6 +92,10 @@ $(document).ready(function() {
         },
         extra: {
           minlength: "escribe aqui los detalles importantes de la cuenta minimo 10 caracteres"
+        },
+        llave: {
+          required: true,
+          minlength: "escribe la llave publica que se te fue enviada" 
         }
       }
     });

@@ -415,6 +415,14 @@ def ListaAsociados(request):
 
 @login_requerido2
 def compartir(request):
-    template = 'inicial.html'
+    template = 'compartir.html'
+    nick = request.session.get('usuario', 'anonimo')
+    if request.method == 'GET':
+        return render(request, template)
+
+@login_requerido2
+def llavePublica(request):
+    template = 'llave.html'
+    nick = request.session.get('usuario', 'anonimo')
     if request.method == 'GET':
         return render(request, template)
