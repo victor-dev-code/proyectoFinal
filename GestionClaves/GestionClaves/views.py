@@ -412,10 +412,12 @@ def ListaAsociados(request):
     	url = request.POST.get('url', '').strip()
     	detalles_extra = request.POST.get('extra', '').strip()
     	
+    	lista_datos = [cuenta, usuario, url, detalles_extra, password]
+    	lista = escacapar_carecteres_credenciales(lista_datos)
     	password, iv, master_password = cifrar_password_credenciales(password)
     	
     	models.Credenciales()
-    	models.Credenciales.objects.filter(pk=id_cuenta).update(nombreCuenta=cuenta, usuario=usuario, password=password, iv=iv, master_password=master_password, url=url, detallesExtra=detalles_extra)
+    	models.Credenciales.objects.filter(pk=id_cuenta).update(nombreCuenta=lista[0], usuario=lista[1], password=password, iv=iv, master_password=master_password, url=lista[2], detallesExtra=lista[3])
     	logging.info("el usuario: " + usuario + "edito una cuenta: " + cuenta)
     	return redirect('/pagina')
     	
@@ -485,6 +487,9 @@ def llavePublica(request):
     	  	archivo.write(usuarios + passwords)
     	  	archivo.close()
     	  	return redirect('/static/%s.docx' % nombre_archivo)
+    	  else:
+    	  	errores = ['La llave pública no es correcta']    
+    	  	return render(request, template, {'errores': errores})
     	  		
     	      	  
     	  
