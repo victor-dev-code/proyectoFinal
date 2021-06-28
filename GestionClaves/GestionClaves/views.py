@@ -317,15 +317,6 @@ def pagina(request):
     template = 'inicial.html'
     if request.method == 'GET':
         return render(request, template)
-        
-def existe_usuario_asociado(usuario):
-	 nicks_almacenados = list(models.Usuarios.objects.values_list('nick').distinct())
-	 for nick in nicks_almacenados:
-	 	nick = ','.join(nick)
-	 	if nick == usuario:
-	 		return True
-	 	else:
-	 		return False
 
 def generar_master_password():
 	 caracteres = string.ascii_letters + string.digits + string.punctuation
@@ -412,13 +403,47 @@ def ListaAsociados(request):
     	models.Credenciales.objects.filter(pk=id_cuenta).update(nombreCuenta=cuenta, usuario=usuario, password=password, iv=iv, master_password=master_password, url=url, detallesExtra=detalles_extra)
     	logging.info("el usuario: " + usuario + "edito una cuenta: " + cuenta)
     	return redirect('/pagina')
+    	
+'''validan si el token y el chat id ingresado por el usuario son validos'''
+def verificar_si_existen_datos_asociado(token, chat_id):
+	 tokens_almacenados = list(models.Usuarios.objects.values_list('tokenT').distinct())
+	 chat_id_almacenados = list(models.Usuarios.objects.values_list('chatID').distinct())
+	 for token_almacenado in tokens_almacenados:
+	 	token_almacenado = ','.join(token_almacenado)
+	 	if token_almacenado == token:
+	 		for chatID in chat_id_almacenados:
+	 			chatID = ','.join(chatID)
+	 			if chatID == chat_id:
+	 				return True
+	 			else:
+	 				return False
+	 	else:
+	 		return False
 
+def enviar_llave_publica(token, chat_id, datos_almacenados):
+	 llave_publica = datos_almacenados.llave_publica
+	 mensaje_enviado = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&parse_mode=Markdown&text=' + llave_publica
+	 requests.get(mensaje_enviado)
+    
 @login_requerido2
 def compartir(request):
     template = 'compartir.html'
     nick = request.session.get('usuario', 'anonimo')
     if request.method == 'GET':
         return render(request, template)
+    elif request.method == 'POST':
+    	  datos_almacenados = models.Usuarios.objects.get(nick=nick)
+    	  usuario = request.POST.get('nick', '').strip()
+    	  chat_id = request.POST.get('chat', '').strip()
+    	  token = request.POST.get('token', '').strip()
+    	  
+    	  #existe_datos = verificar_si_existen_datos_asociado(token, chat_id)
+    	  #if existen_datos == True:    	  
+    	  llave_enviada = enviar_llave_publica(token, chat_id, datos_almacenados)
+    	  return redirect('/pagina')
+    	  #else:
+    	  	#errores = ['E']    
+    	  	#return render(request, template, {'errores': errores})
 
 @login_requerido2
 def llavePublica(request):
@@ -426,3 +451,5 @@ def llavePublica(request):
     nick = request.session.get('usuario', 'anonimo')
     if request.method == 'GET':
         return render(request, template)
+    elif request.method == 'POST':
+    	  pass
