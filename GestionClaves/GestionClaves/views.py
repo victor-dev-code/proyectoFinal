@@ -47,15 +47,9 @@ def restar_tiempo_actual_y_almacenado(tiempo_almacenado):
     diferencia = tiempo_actual - tiempo_almacenado
     return diferencia.seconds
     
-def comparar_tiempo(ip_cliente):
-	 pass
-    
-def verificar_numero_de_intentos(ip_cliente):
-	 pass
-	 
-    
-''' intento de las ip del cliente '''
-def intento_ip(ip):
+
+''' obtiene los intento de las ip del cliente para restringir el acceso un minuto si llega a fallar sus intentos '''
+def obtenr_intentos_ip(ip):
     guardar_registro = models.IntentosIP.objects.filter(pk=ip)
     if not guardar_registro:
         registro = models.IntentosIP(ip=ip, cont=1, last_Peticion=datetime.datetime.now())
@@ -87,7 +81,7 @@ def token(request):
         return render(request, template)
     elif request.method == 'POST':
         ip_cliente = obtener_ip_cliente(request)
-        if intento_ip(ip_cliente):
+        if obtenr_intentos_ip(ip_cliente):
             token = request.POST.get('token', '').strip()
             try:
                 token_almacenado = models.Usuarios.objects.get(tokenEnviado=token)
@@ -105,7 +99,7 @@ def token(request):
             return HttpResponse("Agotaste tus intentos espera 1 minuto") 
 
 
-'''login de usuario '''
+'''página del login de usuario '''
 def login(request):
     template = 'login.html'
     if request.method == 'GET':
@@ -115,7 +109,7 @@ def login(request):
         return render(request, template)
     elif request.method == 'POST':
         ip = obtener_ip_cliente(request)
-        if intento_ip(ip):
+        if obtenr_intentos_ip(ip):
             nick = request.POST.get('nick', '').strip()
             password = request.POST.get('contraseña', '').strip()
             nick = html.escape(nick)
@@ -135,7 +129,7 @@ def login(request):
              return HttpResponse("Agotaste tus intentos espera 1 minuto")
   
 '''
-registrar usuarios
+Escapa los caracteres especiales del formulario de registro
 '''
 def escapar_caracteres_especiales(lista_datos):
     resultado = []
@@ -146,7 +140,8 @@ def escapar_caracteres_especiales(lista_datos):
         resultado.append(campo)
     return resultado
 
-def formato_correcto_password(password):
+'''Verifica si el formato del password que se ingresa en formulario de registro es el correcto '''
+def verificar_formato_correcto_password(password):
     errores_password = []
     if ' ' in password:
         errores_password.append('La contraseña no debe contener espacios')
@@ -160,25 +155,26 @@ def formato_correcto_password(password):
         errores_password.append('La contraseña al menos debe contener un número')
     return errores_password
 
-def nick_repetido(usuarios):
+'''Buscar si el nick del usuario ya existe en la base de datos, si no regresa False'''
+def buscar_nick_repetido(usuarios):
     nick = models.Usuarios.objects.filter(nick=usuarios.nick)
     if len(nick) > 0:
         return True
     return False
 
-def correo_repetido(usuarios):
+def buscar_correo_repetido(usuarios):
     correo = models.Usuarios.objects.filter(correo=usuarios.correo)
     if len(correo) > 0:
         return True
     return False
 
-def chat_id_repetido(usuarios):
+def buscar_chat_id_repetido(usuarios):
     chatID = models.Usuarios.objects.filter(chatID=usuarios.chatID)
     if len(chatID) > 0:
         return True
     return False
 
-def token_repetido(usuarios):
+def buscar_token_repetido(usuarios):
     tokenT = models.Usuarios.objects.filter(tokenT=usuarios.tokenT) 
     if len(tokenT) > 0:
         return True
@@ -195,7 +191,7 @@ def recolectar_errores_registro(usuarios, confirmacion, password):
         errores.append('El campo nombre completo debe contener al menos 15 caracteres')
     if usuarios.nick == '':
         errores.append('El campo nick del usuario está vacío')
-    if nick_repetido(usuarios):
+    if buscar_nick_repetido(usuarios):
         errores.append('El nick %s ya existe' % usuarios.nick)
     if len(usuarios.nick) < 5:
         errores.append('El nick debe contener al menos 5 caracteres')
@@ -207,29 +203,47 @@ def recolectar_errores_registro(usuarios, confirmacion, password):
         errores.append('La contraseña y su confirmación no coinciden')
     if usuarios.correo == '':
         errores.append('El campo correo está vacío')
-    if correo_repetido(usuarios):
+    if buscar_correo_repetido(usuarios):
         errores.append('El correo %s ya está siendo usado por otro usuario' % usuarios.correo)
     if not expresion_regular_email.match(usuarios.correo):
         errores.append('El correo que ingresó no tiene el formato correcto')
     if usuarios.chatID== '':
         errores.append('el campo del chat id esta vacio')
-    if chat_id_repetido(usuarios):
+    if buscar_chat_id_repetido(usuarios):
         errores.append('el chat id %s ya esta en uso' % usuarios.chatID)
     if usuarios.tokenT== '':
         errores.append('el campo del token esta vacio')
-    if token_repetido(usuarios):
+    if buscar_token_repetido(usuarios):
         errores.append('El token %s ya esta en uso' % usuarios.tokenT)
     if len(usuarios.tokenT) < 46:
         errores.append('el token no puede ser menos de 46 caracteres ni mas de 46')
     if not expresion_regular_token_telegram.match(usuarios.tokenT):
         errores.append('el token que ingreso no tiene el formato correcto') 
  
-    errores_password = formato_correcto_password(password)
+    errores_password = verificar_formato_correcto_password(password)
     errores += errores_password
     return errores
+    
+''' Genera las llaves (privada y publica) y las convierte a formato pem'''
+def generar_llaves():
+	 llave_privada = generar_llave_privada()
+	 llave_publica = generar_llave_publica(llave_privada)
+	 llave_privada_pem = convertir_llave_privada_bytes(llave_privada)
+	 llave_publica_pem = convertir_llave_publica_bytes(llave_publica)
+	 llave_publica = convertir_cadena_para_almacenar(llave_publica_pem)
+	 return llave_publica, llave_privada_pem
+	 
+'''Cifra la llave privada y le da un formato para que se almacene en la base de datos'''
+def cifrar_llave_privada(password, llave_privada):
+	 iv = os.urandom(16)
+	 llave_aes = generar_llave_aes_from_password(password)
+	 llave_privada_cifrada = cifrar(llave_privada, llave_aes, iv)
+	 llave_privada = convertir_cadena_para_almacenar(llave_privada_cifrada)
+	 iv_almacenado = convertir_cadena_para_almacenar(iv)
+	 return llave_privada, iv_almacenado
 
 '''
-formulario de registro
+vista del formulario de registro
 '''
 def formulario_registro(request):
     template = 'formulario.html'
@@ -237,7 +251,7 @@ def formulario_registro(request):
         return render(request, template)
     elif request.method == 'POST':
         ip = obtener_ip_cliente(request)
-        if intento_ip(ip):
+        if obtenr_intentos_ip(ip):
             '''Recuperacion de datos ingresados desde la pagina'''
             nombre = request.POST.get('nomCompleto', '').strip()
             nick = request.POST.get('nick', '').strip()
@@ -257,25 +271,13 @@ def formulario_registro(request):
             chat_id = html.escape(chat_id)
             token_telegram = html.escape(token_telegram)
 
-            '''Creación y proceso de hasheo de contraseña a partir de un archivo externo (utils)'''
             salt = os.urandom(16)
             password_hasheado = generar_hash(password, salt)
             password_confirmacion_hasheado = generar_hash(confirmacion, salt)
             salt_almacenado = convertir_cadena_para_almacenar(salt)
-
-            '''creación de llaves y transforlas a formato PEM (otras cosas)'''
-            llave_privada = generar_llave_privada()
-            llave_publica = generar_llave_publica(llave_privada)
-            llave_privada_pem = convertir_llave_privada_bytes(llave_privada)
-            llave_publica_pem = convertir_llave_publica_bytes(llave_publica)
-            llave_publica = convertir_cadena_para_almacenar(llave_publica_pem)
-
-            '''Proceso de cifrado de la llave privada'''
-            iv = os.urandom(16)
-            llave_aes = generar_llave_aes_from_password(password)
-            llave_privada_cifrada = cifrar(llave_privada_pem, llave_aes, iv)
-            llave_privada = convertir_cadena_para_almacenar(llave_privada_cifrada)
-            iv_almacenado = convertir_cadena_para_almacenar(iv)
+            
+            llave_publica, llave_privada_pem = generar_llaves()
+            llave_privada, iv_almacenado = cifrar_llave_privada(password, llave_privada_pem)
 
             '''Guardar los datos recuperados/creados anteriormente antes de mandarlos a la base de datos'''
             usuarios = models.Usuarios()
@@ -318,6 +320,7 @@ def pagina(request):
     if request.method == 'GET':
         return render(request, template)
 
+'''Genera una cadena de 16 caracteres, aleatoria y de tipo string, con el fin de utilizarlo con el cifrado de la contraseña'''   
 def generar_master_password():
 	 caracteres = string.ascii_letters + string.digits + string.punctuation
 	 dimension = 16
@@ -334,6 +337,7 @@ def cifrar_password_credenciales(password):
 	 iv = convertir_cadena_para_almacenar(iv)
 	 return password, iv, master_password
 
+'''vista del formulario para registrar credenciales'''
 @login_requerido2
 def formulario_credenciales(request):
 	 nick = request.session.get('usuario', 'anonimo')
@@ -379,7 +383,8 @@ def descifrar_passwords(datos_almacenados):
 	 	datos_almacenados[numero].password = password_original
 	 	numero+=1
 	 return datos_almacenados
-	 
+
+'''vista para ver las credenciales registradas del usuario'''	 
 @login_requerido2  	  	
 def ListaAsociados(request):
     template = 'asociadas.html'
@@ -420,11 +425,13 @@ def verificar_si_existen_datos_asociado(token, chat_id):
 	 	else:
 	 		return False
 
+'''Envia la llave publica al chat de telegram para el usuario que se le va a compartir los repositorios'''
 def enviar_llave_publica(token, chat_id, datos_almacenados):
 	 llave_publica = datos_almacenados.llave_publica
 	 mensaje_enviado = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&parse_mode=Markdown&text=' + llave_publica
 	 requests.get(mensaje_enviado)
-    
+
+'''Vista de compartir la llave publica'''  
 @login_requerido2
 def compartir(request):
     template = 'compartir.html'
@@ -436,14 +443,9 @@ def compartir(request):
     	  usuario = request.POST.get('nick', '').strip()
     	  chat_id = request.POST.get('chat', '').strip()
     	  token = request.POST.get('token', '').strip()
-    	  
-    	  #existe_datos = verificar_si_existen_datos_asociado(token, chat_id)
-    	  #if existen_datos == True:    	  
+    	      	  
     	  llave_enviada = enviar_llave_publica(token, chat_id, datos_almacenados)
     	  return redirect('/pagina')
-    	  #else:
-    	  	#errores = ['E']    
-    	  	#return render(request, template, {'errores': errores})
 
 @login_requerido2
 def llavePublica(request):
@@ -452,4 +454,28 @@ def llavePublica(request):
     if request.method == 'GET':
         return render(request, template)
     elif request.method == 'POST':
-    	  pass
+    	  datos_almacenados = models.Usuarios.objects.get(nick=nick)
+    	  usuario_compartido = request.POST.get('nick', '').strip()
+    	  llave_publica = request.POST.get('llave', '').strip()
+    	  
+    	  token = datos_almacenados.tokenT
+    	  chat_id = datos_almacenados.chatID
+    	  
+    	  datos_usuario_compartido = models.Usuarios.objects.get(nick = usuario_compartido)
+    	  llave_publica_almacenada = datos_usuario_compartido.llave_publica
+    	  id_usuario = datos_usuario_compartido.id
+    	  
+    	  Credencial = models.Credenciales.objects.filter(pk=id_usuario)
+    	  passwords = descifrar_passwords(Credencial)
+    	  usuarios = Credencial.nick
+    	  
+    	  if llave_publica == llave_publica_almacenada:
+    	  	#mensaje = 'nombre de la cuenta: ' + usuarios + ' password: ' + passwords
+    	  	for credencial in passwords:
+    	  		mensaje_enviado = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&parse_mode=Markdown&text=' + credencial.nick + credencial.password
+    	  		requests.get(mensaje_enviado)
+    	  	return redirect('/pagina')
+    	  		
+    	      	  
+    	  
+    	  
